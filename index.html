@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FounderPort — Complete System Prototype</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--bg:#f5f4ef;--bg2:#eceae2;--bg3:#e2e0d6;--white:#ffffff;--ink:#16160e;--ink2:#2e2d24;--ink3:#5e5d52;--ink4:#9a9990;--rule:#d6d4c8;--rule2:#c4c2b4;--accent:#c94800;--accent2:#e05c14;--accent3:#f57c40;--green:#1f5c35;--green2:#2a7a48;--green3:#cfe8d8;--blue:#163668;--blue2:#1f4d96;--blue3:#d4e4f8;--gold:#8a5208;--gold2:#b06c10;--gold3:#faecd0;--red:#b02820;--red3:#fce8e6;--purple:#4a1f78;--purple2:#6b2fa8;--purple3:#e8dff5;--teal:#145858;--teal2:#1c7878;--teal3:#cce8e8;--pink:#8a1450;--pink3:#f5d8e8;--serif:'Lora',Georgia,serif;--sans:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;--r:10px;--r-sm:7px;--sh:0 2px 10px rgba(22,22,14,.07);--sh2:0 6px 28px rgba(22,22,14,.12);--sh3:0 12px 48px rgba(22,22,14,.18)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13px;line-height:1.6;overflow:hidden;height:100vh}
+.shell{display:flex;flex-direction:column;height:100vh}
+/* DEMO BAR */
+.dbar{background:var(--ink);color:#fff;display:flex;align-items:center;height:42px;flex-shrink:0;z-index:300}
+.dbar-brand{padding:0 16px;font-family:var(--serif);font-size:14px;font-weight:700;border-right:1px solid #1a1a12;height:100%;display:flex;align-items:center;gap:8px;cursor:pointer}
+.dbar-brand em{color:var(--accent3);font-style:normal}
+.dbar-badge{background:var(--accent);font-size:9px;padding:2px 6px;border-radius:3px;font-weight:800;letter-spacing:.08em}
+.dbar-portals{display:flex;height:100%}
+.dbar-portal{padding:0 13px;font-size:10px;color:#555;cursor:pointer;display:flex;align-items:center;gap:5px;border-bottom:2px solid transparent;border-right:1px solid #1a1a12;white-space:nowrap;transition:all .15s;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.dbar-portal:hover{color:#bbb}
+.dbar-portal.active{color:#fff;border-bottom-color:var(--accent);background:#111}
+.dbar-right{margin-left:auto;padding:0 14px;font-size:10px;color:#333;display:flex;align-items:center;gap:6px}
+.dbar-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:pd 2s infinite}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.3}}
+/* SCREENS */
+.screens{flex:1;overflow:hidden;position:relative}
+.screen{display:none;height:100%;overflow:hidden}
+.screen.active{display:flex}
+/* SIDEBAR */
+.sidebar{width:192px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;height:100%;overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:#1e1e16}
+.sb-logo{padding:14px 13px 11px;border-bottom:1px solid #1a1a12}
+.sb-logo-text{font-family:var(--serif);font-size:15px;color:#fff;font-weight:700}
+.sb-logo-text em{color:var(--accent3);font-style:normal}
+.sb-logo-sub{font-size:9px;color:#3a3a30;letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.sb-user{padding:9px 13px 11px;border-bottom:1px solid #1a1a12;display:flex;align-items:center;gap:8px;cursor:pointer}
+.sb-avatar{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.sb-uname{font-size:11px;color:#ccc;font-weight:600;line-height:1.2}
+.sb-urole{font-size:10px;color:#444}
+.sb-nav{padding:6px 0;flex:1}
+.sb-sec{padding:7px 13px 2px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#2e2e26}
+.sb-item{display:flex;align-items:center;gap:8px;padding:6px 13px;color:#666;cursor:pointer;font-size:11.5px;font-weight:500;transition:all .12s;border-left:2px solid transparent}
+.sb-item:hover{color:#ccc;background:rgba(255,255,255,.02)}
+.sb-item.active{color:#fff;background:rgba(201,72,0,.1);border-left-color:var(--accent)}
+.sb-item .si{font-size:12px;width:16px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:8px;padding:1px 5px;border-radius:8px;font-weight:800}
+.sb-credits{margin:8px 10px;padding:9px 11px;background:rgba(201,72,0,.1);border:1px solid rgba(201,72,0,.16);border-radius:8px}
+.sb-cr-label{font-size:9px;color:#555;letter-spacing:.08em;text-transform:uppercase}
+.sb-cr-val{font-family:var(--mono);font-size:22px;color:var(--accent3);font-weight:600;line-height:1.1}
+.sb-cr-sub{font-size:10px;color:#444;margin-top:2px}
+.sb-upgrade{margin:0 10px 10px;padding:7px;border-radius:6px;background:var(--accent);color:#fff;text-align:center;font-size:11px;font-weight:700;cursor:pointer}
+.sb-upgrade:hover{background:var(--accent2)}
+/* MAIN */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-width:0}
+.main::-webkit-scrollbar{width:4px}
+.main::-webkit-scrollbar-thumb{background:var(--rule)}
+.topbar{background:var(--white);border-bottom:1px solid var(--rule);padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:50}
+.topbar-title{font-family:var(--serif);font-size:16px;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:7px}
+.content{padding:18px 20px;flex:1}
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--rule);border-radius:var(--r);padding:17px}
+.card-sm{padding:12px 14px}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--r-sm);border:none;font-family:var(--sans);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:var(--bg2);color:var(--ink2);border:1px solid var(--rule2)}.btn-secondary:hover{background:var(--bg3)}
+.btn-outline{background:transparent;color:var(--ink2);border:1px solid var(--rule2)}.btn-outline:hover{background:var(--bg2)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green2)}
+.btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{background:var(--blue2)}
+.btn-purple{background:var(--purple);color:#fff}.btn-purple:hover{background:var(--purple2)}
+.btn-gold{background:var(--gold);color:#fff}.btn-gold:hover{background:var(--gold2)}
+.btn-teal{background:var(--teal);color:#fff}.btn-teal:hover{background:var(--teal2)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-xs{padding:3px 8px;font-size:10px}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:100px;font-size:10px;font-weight:700}
+.b-green{background:var(--green3);color:var(--green)}
+.b-blue{background:var(--blue3);color:var(--blue)}
+.b-gold{background:var(--gold3);color:var(--gold)}
+.b-red{background:var(--red3);color:var(--red)}
+.b-purple{background:var(--purple3);color:var(--purple)}
+.b-teal{background:var(--teal3);color:var(--teal)}
+.b-orange{background:#fde0cc;color:var(--accent)}
+.b-gray{background:var(--bg3);color:var(--ink4)}
+/* STATS */
+.sg{display:grid;gap:9px;margin-bottom:16px}
+.sg-4{grid-template-columns:repeat(4,1fr)}
+.sg-5{grid-template-columns:repeat(5,1fr)}
+.sg-3{grid-template-columns:repeat(3,1fr)}
+.stat-card{background:var(--white);border:1px solid var(--rule);border-radius:var(--r);padding:13px 15px}
+.stat-val{font-family:var(--serif);font-size:26px;font-weight:700;line-height:1}
+.stat-label{font-size:10.5px;color:var(--ink4);margin-top:4px;font-weight:500}
+.stat-delta{font-size:10px;margin-top:5px}
+.du{color:var(--green2)}.dd{color:var(--red)}
+/* FORM */
+input[type=text],input[type=email],input[type=url],input[type=tel],input[type=number],select,textarea{background:var(--bg2);border:1px solid var(--rule2);border-radius:var(--r-sm);padding:7px 10px;color:var(--ink);font-family:var(--sans);font-size:12px;outline:none;width:100%;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:var(--white)}
+label{font-size:10.5px;font-weight:700;color:var(--ink3);letter-spacing:.04em;text-transform:uppercase;display:block;margin-bottom:4px}
+textarea{resize:vertical;min-height:65px}
+.fr{margin-bottom:12px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.fg4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.fc{grid-column:1/-1}
+/* TABS */
+.tab-bar{display:flex;background:var(--bg2);border-radius:8px;padding:3px;gap:2px;margin-bottom:16px}
+.tab-btn{flex:1;padding:6px 6px;border-radius:6px;border:none;background:transparent;color:var(--ink4);font-family:var(--sans);font-size:10.5px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center}
+.tab-btn.active{background:var(--white);color:var(--ink);box-shadow:var(--sh)}
+/* PROGRESS */
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-bottom:4px}
+.prog-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+/* SCORE */
+.score-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--white);border:1px solid var(--rule);border-radius:6px;margin-bottom:5px}
+.score-label{flex:1;font-size:11px;font-weight:500}
+.score-track{width:88px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;flex-shrink:0}
+.score-fill{height:100%;border-radius:3px}
+.score-num{font-family:var(--mono);font-size:11px;font-weight:600;width:24px;text-align:right;flex-shrink:0}
+.score-status{font-size:10px;width:70px;text-align:right;flex-shrink:0}
+/* AI */
+.ai-pill{display:inline-flex;align-items:center;gap:3px;background:rgba(201,72,0,.08);color:var(--accent);border:1px solid rgba(201,72,0,.18);padding:2px 7px;border-radius:100px;font-size:10px;font-weight:700}
+.spinner{width:12px;height:12px;border:2px solid rgba(201,72,0,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl thead th{text-align:left;padding:8px 10px;border-bottom:2px solid var(--rule2);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);white-space:nowrap;background:var(--bg2)}
+.tbl tbody tr{border-bottom:1px solid var(--rule);transition:background .1s;cursor:pointer}
+.tbl tbody tr:hover{background:var(--bg2)}
+.tbl tbody td{padding:8px 10px;vertical-align:middle}
+.tbl-name{font-weight:600;font-size:12.5px}
+.tbl-sub{font-size:10.5px;color:var(--ink4);margin-top:1px}
+/* INVESTOR CARD */
+.inv-card{background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;transition:all .12s}
+.inv-card:hover{border-color:var(--accent);box-shadow:var(--sh)}
+.inv-av{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.inv-info{flex:1;min-width:0}
+.inv-name{font-weight:700;font-size:12px}
+.inv-firm{font-size:10px;color:var(--ink4)}
+.prob-wrap{display:flex;align-items:center;gap:5px}
+.prob-track{width:52px;height:6px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.prob-fill{height:100%;border-radius:4px}
+.prob-val{font-family:var(--mono);font-size:11.5px;font-weight:700;min-width:28px;text-align:right}
+/* STARTUP CARD */
+.su-card{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--white);border:1px solid var(--rule);border-radius:var(--r);cursor:pointer;transition:all .15s;margin-bottom:7px}
+.su-card:hover{border-color:var(--accent);box-shadow:var(--sh);transform:translateY(-1px)}
+.su-logo{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0}
+.su-name{font-weight:700;font-size:13px}
+.su-meta{font-size:11px;color:var(--ink4);margin-top:1px}
+.su-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+/* GRANT CARD */
+.grant-card{background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:12px 14px;margin-bottom:7px;cursor:pointer;transition:all .12s;display:flex;align-items:flex-start;gap:10px}
+.grant-card:hover{border-color:var(--green2);box-shadow:var(--sh)}
+.grant-elig{width:40px;height:40px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;flex-shrink:0}
+/* KANBAN */
+.kanban{display:flex;gap:9px;overflow-x:auto;padding-bottom:8px;height:calc(100% - 100px)}
+.kanban::-webkit-scrollbar{height:4px}
+.kanban::-webkit-scrollbar-thumb{background:var(--rule)}
+.k-col{width:182px;flex-shrink:0;display:flex;flex-direction:column}
+.k-head{padding:6px 10px;border-radius:6px 6px 0 0;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.k-body{background:var(--bg2);border-radius:0 0 6px 6px;padding:7px;flex:1;overflow-y:auto}
+.k-card{background:var(--white);border:1px solid var(--rule);border-radius:6px;padding:9px 10px;margin-bottom:6px;cursor:pointer;transition:all .12s}
+.k-card:hover{border-color:var(--accent);box-shadow:var(--sh)}
+.k-card-name{font-size:12px;font-weight:700;margin-bottom:3px}
+.k-card-meta{font-size:10px;color:var(--ink4)}
+/* ONE PAGER */
+.op-preview{background:var(--white);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
+.op-hbar{background:linear-gradient(135deg,#100a20,#0e1c3a);padding:18px 20px;display:flex;justify-content:space-between;align-items:flex-start}
+.op-company{font-family:var(--serif);font-size:18px;color:#fff;font-weight:700}
+.op-tagline{font-size:11px;color:#888;margin-top:3px;max-width:320px}
+.op-ask-val{font-family:var(--serif);font-size:20px;color:var(--accent3);font-weight:700}
+.op-ask-lbl{font-size:10px;color:#666;margin-top:2px}
+.op-metrics{display:flex;border-bottom:1px solid var(--rule)}
+.op-metric{flex:1;padding:10px 13px;border-right:1px solid var(--rule);text-align:center}
+.op-metric:last-child{border-right:none}
+.op-metric-val{font-family:var(--serif);font-size:15px;font-weight:700}
+.op-metric-lbl{font-size:10px;color:var(--ink4);margin-top:1px}
+.op-cols{display:grid;grid-template-columns:1fr 1fr}
+.op-col{padding:13px 15px;border-right:1px solid var(--rule)}
+.op-col:last-child{border-right:none}
+.op-col-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px}
+.op-li{font-size:11px;color:var(--ink3);padding:3px 0 3px 11px;position:relative}
+.op-li::before{content:'→';position:absolute;left:0;color:var(--accent);font-size:9px;top:4px}
+/* IRR HEADER */
+.irr-hdr{background:linear-gradient(135deg,#080d1c,#1a0820);border-radius:10px;padding:20px;margin-bottom:13px;display:flex;justify-content:space-between;align-items:flex-start}
+.irr-score-big{font-family:var(--serif);font-size:50px;font-weight:700;color:var(--accent3);line-height:1}
+/* LAYOUT */
+.flex{display:flex}.fg{flex:1}.fx-c{align-items:center}.fx-b{align-items:center;justify-content:space-between}
+.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}.g14{gap:14px}.g16{gap:16px}
+.cols-2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.cols-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+.cols-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.mt4{margin-top:4px}.mt8{margin-top:8px}.mt10{margin-top:10px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+.mb8{margin-bottom:8px}.mb10{margin-bottom:10px}.mb12{margin-bottom:12px}.mb14{margin-bottom:14px}.mb16{margin-bottom:16px}
+.text-muted{color:var(--ink4);font-size:11px}
+.text-sm{font-size:11.5px}
+.fw7{font-weight:700}.fw6{font-weight:600}
+.divider{border:none;border-top:1px solid var(--rule);margin:13px 0}
+.sec-title{font-family:var(--serif);font-size:15px;font-weight:600}
+/* CALLOUT */
+.callout{border-radius:8px;padding:11px 14px;margin-bottom:13px;display:flex;align-items:flex-start;gap:10px}
+.co-orange{background:rgba(201,72,0,.07);border:1px solid rgba(201,72,0,.18)}
+.co-green{background:rgba(31,92,53,.07);border:1px solid rgba(31,92,53,.2)}
+.co-blue{background:rgba(22,54,104,.07);border:1px solid rgba(22,54,104,.2)}
+.co-gold{background:var(--gold3);border:1px solid rgba(138,82,8,.2)}
+/* MILESTONE */
+.milestone{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--rule)}
+.milestone:last-child{border:none}
+/* PLAN CARD */
+.plan-card{border:2px solid var(--rule);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .15s;position:relative}
+.plan-card:hover,.plan-card.selected{border-color:var(--accent)}
+.plan-price{font-family:var(--serif);font-size:26px;font-weight:700}
+/* REV BARS */
+.rev-bar-wrap{display:flex;align-items:flex-end;gap:5px;height:90px}
+.rev-bar{flex:1;background:var(--accent);border-radius:3px 3px 0 0;cursor:pointer;transition:opacity .15s;min-width:0}
+.rev-bar:hover{opacity:.75}
+.rev-bar-lbl{font-size:9px;color:var(--ink4);text-align:center;margin-top:3px}
+/* NEWS */
+.news-item{padding:9px 0;border-bottom:1px solid var(--rule);display:flex;gap:10px}
+.news-item:last-child{border:none}
+.news-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.news-title{font-size:12px;font-weight:600;line-height:1.4}
+.news-meta{font-size:10px;color:var(--ink4);margin-top:2px}
+.news-tag{font-size:10px;color:var(--accent);font-weight:600;margin-top:2px}
+/* TOGGLE */
+.toggle{width:32px;height:17px;border-radius:9px;cursor:pointer;position:relative;transition:.2s;flex-shrink:0}
+.toggle-knob{position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;top:2px;transition:.2s}
+/* TOAST */
+.toast{position:fixed;bottom:16px;right:16px;background:var(--ink);color:#fff;border-radius:8px;padding:10px 15px;font-size:12px;z-index:9999;transform:translateY(60px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;max-width:310px;box-shadow:var(--sh3)}
+.toast.show{transform:translateY(0);opacity:1}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:12px;padding:22px;max-width:500px;width:90%;box-shadow:var(--sh3)}
+.modal-title{font-family:var(--serif);font-size:17px;font-weight:700;margin-bottom:3px}
+.modal-sub{font-size:12px;color:var(--ink4);margin-bottom:16px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--rule2);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="dbar">
+  <div class="dbar-brand" onclick="switchPortal('landing')">Founder<em>Port</em> <span class="dbar-badge">FULL SYSTEM</span></div>
+  <div class="dbar-portals">
+    <div class="dbar-portal active" id="dp-landing" onclick="switchPortal('landing')">🏠 Landing</div>
+    <div class="dbar-portal" id="dp-startup" onclick="switchPortal('startup')">🚀 Startup Portal</div>
+    <div class="dbar-portal" id="dp-investor" onclick="switchPortal('investor')">💼 Investor Portal</div>
+    <div class="dbar-portal" id="dp-incubator" onclick="switchPortal('incubator')">🏛 Incubator Portal</div>
+    <div class="dbar-portal" id="dp-referral" onclick="switchPortal('referral')">🤝 Referral Partner</div>
+    <div class="dbar-portal" id="dp-crm" onclick="switchPortal('crm')">⚙️ MPB Admin CRM</div>
+  </div>
+  <div class="dbar-right"><div class="dbar-dot"></div> All-Sprint Complete System · Confidential · MPB 2026</div>
+</div>
+<div class="screens">
+
+<!-- LANDING -->
+<div class="screen active" id="screen-landing">
+<div style="height:100%;overflow-y:auto;background:#0c0c07">
+  <div style="background:linear-gradient(150deg,#0c0c07 55%,#1a0e04);padding:68px 70px 52px;position:relative;overflow:hidden">
+    <div style="position:absolute;right:-80px;top:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(201,72,0,.08),transparent 68%);pointer-events:none"></div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--accent3);letter-spacing:.22em;text-transform:uppercase;margin-bottom:16px">Powered by MyProBuddy · India's Capital Execution Network</div>
+    <div style="font-family:var(--serif);font-size:54px;font-weight:700;color:#fff;line-height:1.06;letter-spacing:-.02em;margin-bottom:13px">India's smartest<br>startup <em style="color:var(--accent3)">enablement</em><br>platform.</div>
+    <div style="font-size:15px;color:#666;max-width:480px;line-height:1.7;margin-bottom:28px">Get investor-ready in hours. Match with 10,000+ investors. Access grants. Launch campaigns. All AI-powered.</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary" style="font-size:13px;padding:11px 26px" onclick="switchPortal('startup');toast('✓ Welcome — 50 free credits added!')">Start Free — 50 Credits</button>
+      <button class="btn btn-outline" style="font-size:13px;padding:11px 22px;color:#aaa;border-color:#2a2a1e;background:transparent" onclick="switchPortal('incubator')">For Incubators →</button>
+      <button class="btn btn-outline" style="font-size:13px;padding:11px 22px;color:#777;border-color:#222;background:transparent" onclick="switchPortal('investor')">For Investors →</button>
+    </div>
+    <div style="margin-top:16px;font-size:11px;color:#333">No credit card · 50 free credits on signup · 20+ incubators · DPDP Act 2023 compliant</div>
+  </div>
+  <div style="background:#101009;border-top:1px solid #1a1a10;border-bottom:1px solid #1a1a10;padding:16px 70px;display:flex">
+    <div style="flex:1;text-align:center;border-right:1px solid #1a1a10;padding:0 16px"><div style="font-family:var(--serif);font-size:28px;color:var(--accent3);font-weight:700">10,000+</div><div style="font-size:11px;color:#444;margin-top:2px">Investors in Database</div></div>
+    <div style="flex:1;text-align:center;border-right:1px solid #1a1a10;padding:0 16px"><div style="font-family:var(--serif);font-size:28px;color:var(--accent3);font-weight:700">520+</div><div style="font-size:11px;color:#444;margin-top:2px">Portfolio Companies</div></div>
+    <div style="flex:1;text-align:center;border-right:1px solid #1a1a10;padding:0 16px"><div style="font-family:var(--serif);font-size:28px;color:var(--accent3);font-weight:700">340+</div><div style="font-size:11px;color:#444;margin-top:2px">Active Mandates</div></div>
+    <div style="flex:1;text-align:center;border-right:1px solid #1a1a10;padding:0 16px"><div style="font-family:var(--serif);font-size:28px;color:var(--accent3);font-weight:700">500+</div><div style="font-size:11px;color:#444;margin-top:2px">Grant Schemes Tracked</div></div>
+    <div style="flex:1;text-align:center;padding:0 16px"><div style="font-family:var(--serif);font-size:28px;color:var(--accent3);font-weight:700">₹0</div><div style="font-size:11px;color:#444;margin-top:2px">to Get Started</div></div>
+  </div>
+  <div style="padding:50px 70px">
+    <div style="font-family:var(--serif);font-size:28px;color:#fff;margin-bottom:5px;font-weight:700">One platform. Four audiences.</div>
+    <div style="font-size:13px;color:#444;margin-bottom:28px">Every player in India's startup capital ecosystem.</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px">
+      <div style="background:#151510;border:1px solid #1e1e14;border-top:3px solid var(--accent);border-radius:10px;padding:17px;cursor:pointer" onclick="switchPortal('startup')">
+        <div style="font-size:22px;margin-bottom:8px">🚀</div>
+        <div style="font-family:var(--serif);font-size:15px;color:#fff;font-weight:700;margin-bottom:5px">Startups</div>
+        <div style="font-size:11.5px;color:#555;line-height:1.6;margin-bottom:12px">IRR reports, pitch decks, investor matching, grants — all AI-powered.</div>
+        <div style="font-size:11px;color:var(--accent);font-weight:600">Free to start →</div>
+      </div>
+      <div style="background:#151510;border:1px solid #1e1e14;border-top:3px solid #1f4d96;border-radius:10px;padding:17px;cursor:pointer" onclick="switchPortal('investor')">
+        <div style="font-size:22px;margin-bottom:8px">💼</div>
+        <div style="font-family:var(--serif);font-size:15px;color:#fff;font-weight:700;margin-bottom:5px">Investors</div>
+        <div style="font-size:11.5px;color:#555;line-height:1.6;margin-bottom:12px">Define your mandate. Get matched startups. Track deal flow. Zero noise.</div>
+        <div style="font-size:11px;color:#1f4d96;font-weight:600">Set mandate →</div>
+      </div>
+      <div style="background:#151510;border:1px solid #1e1e14;border-top:3px solid #2a7a48;border-radius:10px;padding:17px;cursor:pointer" onclick="switchPortal('incubator')">
+        <div style="font-size:22px;margin-bottom:8px">🏛</div>
+        <div style="font-family:var(--serif);font-size:15px;color:#fff;font-weight:700;margin-bottom:5px">Incubators</div>
+        <div style="font-size:11.5px;color:#555;line-height:1.6;margin-bottom:12px">Manage cohorts. Investor matches. DPIIT reporting. White-label.</div>
+        <div style="font-size:11px;color:#2a7a48;font-weight:600">Book demo →</div>
+      </div>
+      <div style="background:#151510;border:1px solid #1e1e14;border-top:3px solid #b06c10;border-radius:10px;padding:17px;cursor:pointer" onclick="switchPortal('referral')">
+        <div style="font-size:22px;margin-bottom:8px">🤝</div>
+        <div style="font-family:var(--serif);font-size:15px;color:#fff;font-weight:700;margin-bottom:5px">Partners</div>
+        <div style="font-size:11.5px;color:#555;line-height:1.6;margin-bottom:12px">Refer startups. Earn revenue share. Track your pipeline.</div>
+        <div style="font-size:11px;color:#b06c10;font-weight:600">Become partner →</div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 70px 50px">
+    <div style="font-family:var(--serif);font-size:28px;color:#fff;margin-bottom:5px;font-weight:700">Simple, credit-based pricing.</div>
+    <div style="font-size:13px;color:#444;margin-bottom:24px">Pay for what you use. No lock-in.</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px">
+      <div style="background:transparent;border:1px solid #1e1e14;border-radius:10px;padding:17px">
+        <div style="font-size:11px;color:var(--accent3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px">Free</div>
+        <div style="font-family:var(--serif);font-size:26px;color:#fff;font-weight:700">₹0</div>
+        <div style="font-size:11px;color:#444;margin:7px 0 14px;border-top:1px solid #1a1a10;padding-top:9px">50 credits on signup. No card.</div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:11px" onclick="switchPortal('startup')">Get Started</button>
+      </div>
+      <div style="background:transparent;border:1px solid #2a2a1a;border-radius:10px;padding:17px">
+        <div style="font-size:11px;color:var(--accent3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px">Starter</div>
+        <div style="font-family:var(--serif);font-size:26px;color:#fff;font-weight:700">₹999<span style="font-size:14px;color:#444">/mo</span></div>
+        <div style="font-size:11px;color:#444;margin:7px 0 14px;border-top:1px solid #1a1a10;padding-top:9px">300 credits/month. All AI tools.</div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:11px" onclick="switchPortal('startup')">Buy Now</button>
+      </div>
+      <div style="background:rgba(201,72,0,.06);border:2px solid var(--accent);border-radius:10px;padding:17px;position:relative">
+        <div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px">POPULAR</div>
+        <div style="font-size:11px;color:var(--accent3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px">Growth</div>
+        <div style="font-family:var(--serif);font-size:26px;color:#fff;font-weight:700">₹2,499<span style="font-size:14px;color:#444">/mo</span></div>
+        <div style="font-size:11px;color:#444;margin:7px 0 14px;border-top:1px solid #2a1a0a;padding-top:9px">1,000 credits. Priority matching.</div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:11px" onclick="switchPortal('startup')">Buy Now</button>
+      </div>
+      <div style="background:transparent;border:1px solid #1e1e14;border-radius:10px;padding:17px">
+        <div style="font-size:11px;color:var(--accent3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px">Incubator</div>
+        <div style="font-family:var(--serif);font-size:26px;color:#fff;font-weight:700">₹15K<span style="font-size:14px;color:#444">/mo</span></div>
+        <div style="font-size:11px;color:#444;margin:7px 0 14px;border-top:1px solid #1a1a10;padding-top:9px">50–200 startups. White-label.</div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:11px" onclick="switchPortal('incubator')">Book Demo</button>
+      </div>
+    </div>
+  </div>
+  <div style="background:#080807;padding:18px 70px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #141410">
+    <div style="font-family:var(--serif);font-size:13px;color:#fff">Founder<em style="color:var(--accent3);font-style:normal">Port</em> · Powered by MyProBuddy Ventures Pvt Ltd</div>
+    <div style="font-size:11px;color:#2a2a20">reachus@myprobuddy.com · +91 99406 76804 · Chennai, TN</div>
+  </div>
+</div>
+</div>
+
+<!-- STARTUP PORTAL -->
+<div class="screen" id="screen-startup">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-logo-text">Founder<em>Port</em></div><div class="sb-logo-sub">Startup Portal</div></div>
+    <div class="sb-user" onclick="openStartupSwitcher()">
+      <div class="sb-avatar" id="su-avatar" style="background:var(--accent)">LM</div>
+      <div><div class="sb-uname" id="su-name">Landmarket</div><div class="sb-urole" id="su-role">Pre-Seed · PropTech</div></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Main</div>
+      <div class="sb-item active" id="sn-dashboard" onclick="showSU('dashboard')"><span class="si">⬡</span> Dashboard</div>
+      <div class="sb-item" id="sn-profile" onclick="showSU('profile')"><span class="si">👤</span> My Profile</div>
+      <div class="sb-sec">Fundraising</div>
+      <div class="sb-item" id="sn-irr" onclick="showSU('irr')"><span class="si">📊</span> IRR Report</div>
+      <div class="sb-item" id="sn-onepager" onclick="showSU('onepager')"><span class="si">📄</span> One-Pager</div>
+      <div class="sb-item" id="sn-pitchdeck" onclick="showSU('pitchdeck')"><span class="si">🎯</span> Pitch Deck</div>
+      <div class="sb-item" id="sn-investors" onclick="showSU('investors')"><span class="si">💼</span> Find Investors <span class="sb-badge">8</span></div>
+      <div class="sb-item" id="sn-outreach" onclick="showSU('outreach')"><span class="si">📧</span> Outreach Tracker</div>
+      <div class="sb-item" id="sn-grants" onclick="showSU('grants')"><span class="si">🏛</span> Find Grants</div>
+      <div class="sb-sec">AI Tools</div>
+      <div class="sb-item" id="sn-gtm" onclick="showSU('gtm')"><span class="si">📈</span> GTM Strategy</div>
+      <div class="sb-item" id="sn-financial" onclick="showSU('financial')"><span class="si">🧮</span> Financial Model</div>
+      <div class="sb-item" id="sn-competitor" onclick="showSU('competitor')"><span class="si">🔍</span> Competitor Intel</div>
+      <div class="sb-item" id="sn-invoice" onclick="showSU('invoice')"><span class="si">🧾</span> Invoice Tool</div>
+      <div class="sb-item" id="sn-brochure" onclick="showSU('brochure')"><span class="si">📰</span> Product Brochure</div>
+      <div class="sb-sec">Workspace</div>
+      <div class="sb-item" id="sn-hr" onclick="showSU('hr')"><span class="si">👥</span> HR Tools</div>
+      <div class="sb-item" id="sn-cofounder" onclick="showSU('cofounder')"><span class="si">🤝</span> Co-Founder Agmt.</div>
+      <div class="sb-item" id="sn-marketplace" onclick="showSU('marketplace')"><span class="si">🛒</span> Service Marketplace</div>
+      <div class="sb-item" id="sn-buildproduct" onclick="showSU('buildproduct')"><span class="si">🏗</span> Build My Product</div>
+      <div class="sb-sec">Account</div>
+      <div class="sb-item" id="sn-billing" onclick="showSU('billing')"><span class="si">💳</span> Credits & Billing</div>
+      <div class="sb-item" id="sn-settings" onclick="showSU('settings')"><span class="si">⚙️</span> Settings</div>
+    </div>
+    <div class="sb-credits"><div class="sb-cr-label">Credits</div><div class="sb-cr-val" id="su-credits">43</div><div class="sb-cr-sub" id="su-plan">of 50 free</div></div>
+    <div class="sb-upgrade" onclick="showSU('billing')">⬆ Upgrade Plan</div>
+  </div>
+  <div class="main" id="su-main"></div>
+</div>
+
+<!-- INVESTOR PORTAL -->
+<div class="screen" id="screen-investor">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-logo-text">Founder<em>Port</em></div><div class="sb-logo-sub">Investor Portal</div></div>
+    <div class="sb-user">
+      <div class="sb-avatar" style="background:#7c3aed">SI</div>
+      <div><div class="sb-uname">Speciale Invest</div><div class="sb-urole">Venture Fund · Chennai</div></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Dashboard</div>
+      <div class="sb-item active" id="in-dashboard" onclick="showIN('inv-dashboard')"><span class="si">⬡</span> Dashboard</div>
+      <div class="sb-item" id="in-dealflow" onclick="showIN('inv-dealflow')"><span class="si">📥</span> Deal Flow Inbox <span class="sb-badge">14</span></div>
+      <div class="sb-item" id="in-browse" onclick="showIN('inv-browse')"><span class="si">🔍</span> Browse Startups</div>
+      <div class="sb-sec">Mandate</div>
+      <div class="sb-item" id="in-mandate" onclick="showIN('inv-mandate')"><span class="si">📝</span> My Mandate</div>
+      <div class="sb-item" id="in-interest" onclick="showIN('inv-interest')"><span class="si">⭐</span> Expressed Interest</div>
+      <div class="sb-item" id="in-portfolio" onclick="showIN('inv-portfolio')"><span class="si">💼</span> Portfolio Tracking</div>
+      <div class="sb-sec">Account</div>
+      <div class="sb-item"><span class="si">⚙️</span> Settings</div>
+    </div>
+  </div>
+  <div class="main" id="in-main"></div>
+</div>
+
+<!-- INCUBATOR PORTAL -->
+<div class="screen" id="screen-incubator">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-logo-text">Founder<em>Port</em></div><div class="sb-logo-sub">Sona Incubation</div></div>
+    <div class="sb-user">
+      <div class="sb-avatar" style="background:var(--green)">SI</div>
+      <div><div class="sb-uname">Sona Incubation</div><div class="sb-urole">Incubator Admin</div></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Dashboard</div>
+      <div class="sb-item active" id="ic-overview" onclick="showIC('ic-portfolio')"><span class="si">⬡</span> Portfolio Overview</div>
+      <div class="sb-item" id="ic-startups-btn" onclick="showIC('ic-startups')"><span class="si">🚀</span> My Startups</div>
+      <div class="sb-item" id="ic-invmatch-btn" onclick="showIC('ic-invmatch')"><span class="si">💼</span> Investor Matches <span class="sb-badge">New</span></div>
+      <div class="sb-item" id="ic-news-btn" onclick="showIC('ic-news')"><span class="si">📰</span> Portfolio News</div>
+      <div class="sb-sec">Management</div>
+      <div class="sb-item" id="ic-milestones-btn" onclick="showIC('ic-milestones')"><span class="si">🎯</span> Milestones</div>
+      <div class="sb-item" id="ic-grants-btn" onclick="showIC('ic-grants')"><span class="si">🏛</span> Grants Pipeline</div>
+      <div class="sb-item" id="ic-mentors-btn" onclick="showIC('ic-mentors')"><span class="si">🤝</span> Mentors</div>
+      <div class="sb-item" id="ic-dpiit-btn" onclick="showIC('ic-dpiit')"><span class="si">📊</span> DPIIT Reports</div>
+      <div class="sb-sec">Settings</div>
+      <div class="sb-item" id="ic-wl-btn" onclick="showIC('ic-whitelabel')"><span class="si">🎨</span> White-Label Settings</div>
+      <div class="sb-item"><span class="si">⚙️</span> Account Settings</div>
+    </div>
+  </div>
+  <div class="main" id="ic-main"></div>
+</div>
+
+<!-- REFERRAL PORTAL -->
+<div class="screen" id="screen-referral">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-logo-text">Founder<em>Port</em></div><div class="sb-logo-sub">Partner Portal</div></div>
+    <div class="sb-user">
+      <div class="sb-avatar" style="background:var(--gold2)">RK</div>
+      <div><div class="sb-uname">Ravi Kumar</div><div class="sb-urole">Referral Partner</div></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Main</div>
+      <div class="sb-item active" id="rp-dashboard" onclick="showRP('rp-dashboard')"><span class="si">⬡</span> Dashboard</div>
+      <div class="sb-item" id="rp-pipeline" onclick="showRP('rp-pipeline')"><span class="si">📋</span> My Pipeline</div>
+      <div class="sb-item" id="rp-earnings" onclick="showRP('rp-earnings')"><span class="si">💰</span> Earnings</div>
+      <div class="sb-item" id="rp-marketing" onclick="showRP('rp-marketing')"><span class="si">📦</span> Marketing Kit</div>
+      <div class="sb-sec">Account</div>
+      <div class="sb-item"><span class="si">⚙️</span> Settings</div>
+    </div>
+  </div>
+  <div class="main" id="rp-main"></div>
+</div>
+
+<!-- MPB ADMIN CRM -->
+<div class="screen" id="screen-crm">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-logo-text">Founder<em>Port</em></div><div class="sb-logo-sub">MPB Admin CRM</div></div>
+    <div class="sb-user">
+      <div class="sb-avatar" style="background:var(--purple)">A</div>
+      <div><div class="sb-uname">Amrish Krishnan</div><div class="sb-urole">Mission Director</div></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">CRM</div>
+      <div class="sb-item active" id="crm-pipeline" onclick="showCRM('crm-pipeline')"><span class="si">◫</span> Pipeline Kanban</div>
+      <div class="sb-item" id="crm-mandates" onclick="showCRM('crm-mandates')"><span class="si">💼</span> Investor Mandates</div>
+      <div class="sb-item" id="crm-incubators" onclick="showCRM('crm-incubators')"><span class="si">🏛</span> Incubators CRM</div>
+      <div class="sb-item" id="crm-partners" onclick="showCRM('crm-partners')"><span class="si">🤝</span> Partner Mgmt.</div>
+      <div class="sb-sec">Operations</div>
+      <div class="sb-item" id="crm-grants-queue" onclick="showCRM('crm-grants-queue')"><span class="si">🏛</span> Grants Queue <span class="sb-badge">4</span></div>
+      <div class="sb-item" id="crm-n8n" onclick="showCRM('crm-n8n')"><span class="si">📧</span> n8n Campaigns</div>
+      <div class="sb-item" id="crm-dbhealth" onclick="showCRM('crm-dbhealth')"><span class="si">🗄</span> Database Health</div>
+      <div class="sb-item" id="crm-agent" onclick="showCRM('crm-agent')"><span class="si">🤖</span> AI Agent Log</div>
+      <div class="sb-sec">Revenue</div>
+      <div class="sb-item" id="crm-revenue" onclick="showCRM('crm-revenue')"><span class="si">📈</span> Revenue Dashboard</div>
+      <div class="sb-item" id="crm-team" onclick="showCRM('crm-team')"><span class="si">👥</span> Team Tasks</div>
+      <div class="sb-item" id="crm-platform" onclick="showCRM('crm-platform')"><span class="si">⚙️</span> Platform Settings</div>
+    </div>
+  </div>
+  <div class="main" id="crm-main"></div>
+</div>
+
+</div><!-- .screens -->
+</div><!-- .shell -->
+
+<!-- STARTUP SWITCHER MODAL -->
+<div class="modal-overlay" id="startup-switcher">
+  <div class="modal">
+    <div class="modal-title">Switch Startup</div>
+    <div class="modal-sub">Select a startup to view their portal context</div>
+    <div id="switcher-list"></div>
+    <div style="margin-top:12px;display:flex;justify-content:flex-end"><button class="btn btn-outline" onclick="closeModal('startup-switcher')">Cancel</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<script>
+const STARTUPS=[
+  {id:'landmarket',name:'Landmarket',abbr:'LM',color:'#c94800',sector:'PropTech',stage:'Pre-Seed',founder:'Rajesh Kumar',ask:'₹1Cr',irr:4.0,irrColor:'#b06c10',status:'IRR Done',credits:43,creditPlan:'50 free',investors:26,grants:5,city:'Trichy, TN'},
+  {id:'peppypulse',name:'PeppyPulse',abbr:'PP',color:'#163668',sector:'5G Hardware',stage:'Pre-Seed',founder:'Arjun Menon',ask:'₹3Cr',irr:4.5,irrColor:'#2a7a48',status:'One-Pager Done',credits:280,creditPlan:'300 Starter',investors:18,grants:3,city:'Chennai, TN'},
+  {id:'iscalepro',name:'iScalePro',abbr:'iS',color:'#4a1f78',sector:'HR Tech',stage:'Pre-Seed',founder:'Venkat K',ask:'₹2Cr',irr:null,irrColor:'#9a9990',status:'Data Received',credits:50,creditPlan:'50 free',investors:0,grants:0,city:'Bangalore, KA'},
+  {id:'biglyp',name:'Biglyp',abbr:'BG',color:'#145858',sector:'EdFinTech',stage:'Pre-Seed',founder:'Rahul Shah',ask:'₹5Cr',irr:null,irrColor:'#9a9990',status:'Profile Complete',credits:46,creditPlan:'50 free',investors:0,grants:0,city:'Pune, MH'},
+  {id:'heterogenix',name:'Heterogenix',abbr:'HX',color:'#8a1450',sector:'WaterTech',stage:'Pre-Seed',founder:'Suresh M',ask:'₹20L',irr:3.2,irrColor:'#b02820',status:'Investor Search',credits:920,creditPlan:'1000 Growth',investors:12,grants:4,city:'Chennai, TN'},
+];
+let S=STARTUPS[0];
+let curSU='dashboard',curIN='inv-dashboard',curIC='ic-portfolio',curRP='rp-dashboard',curCRM='crm-pipeline';
+
+function switchPortal(p){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.dbar-portal').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+p).classList.add('active');
+  document.getElementById('dp-'+p).classList.add('active');
+  if(p==='startup')renderSU(curSU);
+  if(p==='investor')renderIN(curIN);
+  if(p==='incubator')renderIC(curIC);
+  if(p==='referral')renderRP(curRP);
+  if(p==='crm')renderCRM(curCRM);
+}
+
+function toast(msg,dur=3500){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),dur);
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+function openStartupSwitcher(){
+  document.getElementById('switcher-list').innerHTML=STARTUPS.map(s=>`
+    <div class="su-card" onclick="setStartup('${s.id}');closeModal('startup-switcher')">
+      <div class="su-logo" style="background:${s.color}">${s.abbr}</div>
+      <div style="flex:1"><div class="su-name">${s.name}</div><div class="su-meta">${s.sector} · ${s.stage} · ${s.city}</div></div>
+      <span class="badge ${s.irr?'b-orange':'b-gray'}">${s.status}</span>
+    </div>`).join('');
+  openModal('startup-switcher');
+}
+function setStartup(id){
+  S=STARTUPS.find(s=>s.id===id);
+  document.getElementById('su-avatar').textContent=S.abbr;
+  document.getElementById('su-avatar').style.background=S.color;
+  document.getElementById('su-name').textContent=S.name;
+  document.getElementById('su-role').textContent=S.stage+' · '+S.sector;
+  document.getElementById('su-credits').textContent=S.credits;
+  document.getElementById('su-plan').textContent='of '+S.creditPlan;
+  renderSU(curSU);
+}
+
+function setSBA(pfx,id){
+  try{document.querySelectorAll('[id^="'+pfx+'"]').forEach(e=>e.classList.remove('active'));}catch(e){}
+  try{const el=document.getElementById(id);if(el)el.classList.add('active');}catch(e){}
+}
+
+function showSU(sc){curSU=sc;setSBA('sn-','sn-'+sc);renderSU(sc)}
+function showIN(sc){curIN=sc;setSBA('in-','in-'+sc.replace('inv-',''));renderIN(sc)}
+function showIC(sc){curIC=sc;setSBA('ic-',sc==='ic-portfolio'?'ic-overview':sc+'-btn');renderIC(sc)}
+function showRP(sc){curRP=sc;setSBA('rp-','rp-'+sc.replace('rp-',''));renderRP(sc)}
+function showCRM(sc){curCRM=sc;setSBA('crm-','crm-'+sc.replace('crm-',''));renderCRM(sc)}
+
+// ─────── STARTUP SCREENS ───────
+function renderSU(sc){
+  const m=document.getElementById('su-main');
+  const s=S;
+  const ic=s.irr?s.irrColor:'#9a9990';
+  const id=s.irr?s.irr.toFixed(1):'—';
+
+  if(sc==='dashboard') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Dashboard — ${s.name}</div><div class="topbar-right">
+      <button class="btn btn-secondary btn-sm" onclick="toast('🔔 3 new alerts — 1 investor match, 2 grant deadlines')">🔔 Alerts</button>
+      <button class="btn btn-primary btn-sm" onclick="showSU('investors')">💼 Find Investors</button>
+    </div></div>
+    <div class="content">
+      ${!s.irr?`<div class="callout co-orange"><span style="font-size:18px">⚡</span><div style="flex:1"><div class="fw7">Profile ${s.id==='iscalepro'?68:72}% complete — complete to unlock better investor matches</div><div class="text-sm text-muted mt4">Missing: Financials, Funding ask, document uploads.</div></div><button class="btn btn-primary btn-sm" onclick="showSU('profile')">Complete Profile →</button></div>`:''}
+      <div class="sg sg-4">
+        <div class="stat-card" style="border-top:3px solid ${ic}"><div class="stat-val" style="color:${ic}">${id}</div><div class="stat-label">IRR Score / 10</div><div class="stat-delta" style="color:var(--ink4)">${s.irr?'View full report':'Generate now'}</div></div>
+        <div class="stat-card" style="border-top:3px solid var(--blue)"><div class="stat-val" style="color:var(--blue)">${s.investors||'—'}</div><div class="stat-label">Matched Investors</div><div class="stat-delta du">${s.investors?'↑ 8 new this week':'Run investor search'}</div></div>
+        <div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">${s.grants||'—'}</div><div class="stat-label">Grants Eligible</div><div class="stat-delta" style="color:var(--ink4)">${s.grants?'2 deadlines soon':'Run grant search'}</div></div>
+        <div class="stat-card" style="border-top:3px solid var(--gold)"><div class="stat-val" style="color:var(--gold)">${s.credits}</div><div class="stat-label">Credits Remaining</div><div class="stat-delta" style="color:var(--ink4)">${s.creditPlan}</div></div>
+      </div>
+      <div class="cols-2 g14">
+        <div class="card">
+          <div class="flex fx-b mb12"><div class="sec-title">Quick Actions</div><span class="ai-pill">✦ AI tools</span></div>
+          ${[['📊','IRR Report','Investment readiness report','5 credits','irr'],['📄','One-Pager','Investor-ready summary','3 credits','onepager'],['🎯','Pitch Deck','Full 12-slide deck','10 credits','pitchdeck'],['💼','Find Investors','Match from 10,000+ DB','2 credits','investors'],['🏛','Find Grants','500+ schemes matched','1 credit','grants'],['📈','GTM Strategy','Go-to-market playbook','5 credits','gtm']].map(([icon,title,sub,cost,sc])=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 10px;background:var(--bg2);border-radius:8px;cursor:pointer;border:1px solid var(--rule);margin-bottom:6px;transition:all .12s" onclick="showSU('${sc}')" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--rule)'">
+            <span style="font-size:16px">${icon}</span>
+            <div style="flex:1"><div class="fw6 text-sm">${title}</div><div style="font-size:10.5px;color:var(--ink4)">${sub}</div></div>
+            <span class="ai-pill">✦ ${cost}</span>
+          </div>`).join('')}
+        </div>
+        <div class="card">
+          <div class="flex fx-b mb12"><div class="sec-title">Today's News About You</div><span class="ai-pill" style="font-size:9px">✦ AI-curated daily</span></div>
+          ${[['#2a7a48','99acres deepens Tier-2 focus — Tamil Nadu partnerships expanding','Relevant to: '+s.name+' · '+s.sector,'The Hindu Business · 2hr ago'],['#1f4d96','Speciale Invest closes ₹180Cr Fund III — South India deeptech focus','New investor match: High probability for '+s.name,'YourStory · 5hr ago'],['#c94800','Tamil Nadu RERA mandates digital listing verification for brokers','Market opportunity signal for '+s.sector,'The Hindu · 1 day ago'],['#b06c10','DST NIDHI PRAYAS announces new cohort — applications open till June 30','Grant opportunity — you may be eligible · 92% match','DST India · 1 day ago']].map(([color,title,tag,meta])=>`
+          <div class="news-item"><div class="news-dot" style="background:${color}"></div><div style="flex:1"><div class="news-title">${title}</div><div class="news-tag">${tag}</div><div class="news-meta">${meta}</div></div></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  else if(sc==='profile') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">My Profile — ${s.name}</div><div class="topbar-right">
+      <span class="ai-pill">✦ AI pre-fill from website + LinkedIn</span>
+      <button class="btn btn-primary btn-sm" onclick="toast('✓ Profile saved — completion now 85%')">Save All</button>
+    </div></div>
+    <div class="content">
+      <div class="mb12"><div class="prog-label"><span>Profile Completion</span><span style="color:var(--accent);font-weight:700">68%</span></div><div class="prog-track"><div class="prog-fill" style="width:68%"></div></div></div>
+      <div class="tab-bar">${['① Founders ✓','② Company ✓','③ Financials','④ Fundraising','⑤ Vision ✓','⑥ Documents'].map((t,i)=>`<button class="tab-btn${i===0?' active':''}" onclick="this.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">${t}</button>`).join('')}</div>
+      <div class="card">
+        <div class="callout co-orange mb12"><span style="font-size:16px">🔗</span><div style="flex:1"><div class="fw7">Paste your LinkedIn URL to AI pre-fill your profile</div></div></div>
+        <div class="fg2">
+          <div class="fr"><label>Founder Name *</label><input type="text" value="${s.founder}"></div>
+          <div class="fr"><label>Email *</label><input type="email" value="${s.id}@${s.id}.in"></div>
+          <div class="fr"><label>Phone</label><input type="tel" value="+91 98765 43210"></div>
+          <div class="fr"><label>LinkedIn URL</label><input type="url" value="linkedin.com/in/${s.id}" oninput="if(!window._ai){window._ai=1;setTimeout(()=>toast('✓ AI pre-filled company details from LinkedIn + website'),1800)}"></div>
+          <div class="fr fc"><label>City / State</label><input type="text" value="${s.city}"></div>
+          <div class="fr fc"><label>Team Members & Roles</label><textarea>${s.founder} — Founder & CEO\nCTO — Full-stack engineer\nHead of Operations</textarea></div>
+        </div>
+        <div class="flex fx-b mt10"><div></div><button class="btn btn-primary" onclick="toast('✓ Founders section saved')">Save & Next →</button></div>
+      </div>
+    </div>`;
+
+  else if(sc==='irr'){
+    const scores=[['Entity & Legal Health',s.id==='heterogenix'?2.5:4.0,'#b06c10','Needs Work'],['Founders & Team Quality',s.id==='peppypulse'?5.5:4.0,'#b06c10','Needs Work'],['Market Opportunity',s.id==='biglyp'?6.5:7.5,'#2a7a48','Strong ✦'],['Product Maturity',s.id==='peppypulse'?5.0:4.5,'#b06c10','Needs Work'],['Traction & Validation',s.id==='heterogenix'?2.0:3.0,'#b02820','Weak'],['Financial Transparency',s.id==='peppypulse'?3.5:2.0,'#b02820','Weak'],['Competitive Differentiation',4.5,'#c94800','On Track'],['Exit Clarity',s.id==='biglyp'?6.0:5.5,'#c94800','On Track'],['Regulatory & Certs',s.id==='heterogenix'?1.5:2.5,'#b02820','Weak']];
+    m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Investment Readiness Report — ${s.name}</div><div class="topbar-right">
+      <span class="ai-pill">✦ Claude AI</span>
+      <button class="btn btn-secondary btn-sm">✏️ Edit</button>
+      <button class="btn btn-primary btn-sm" onclick="toast('⬇ IRR_${s.name}_May2026.pdf downloading...')">⬇ PDF</button>
+    </div></div>
+    <div class="content">
+      ${!s.irr?`<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:rgba(201,72,0,.05);border:1px solid rgba(201,72,0,.14);border-radius:8px;color:var(--accent);font-size:12px;margin-bottom:13px"><div class="spinner"></div>Generating your IRR report — analysing profile, market data, and comparables...</div>`:''}
+      <div class="irr-hdr">
+        <div>
+          <div style="font-family:var(--serif);font-size:18px;color:#fff;font-weight:700">${s.name}</div>
+          <div style="font-size:11px;color:#666;margin-top:2px">${s.sector} · ${s.stage} · ${s.city}</div>
+          <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:#777"><span><strong style="color:#bbb">Ask:</strong> ${s.ask}</span><span><strong style="color:#bbb">Investors:</strong> ${s.investors||'—'} matched</span></div>
+          <div style="display:flex;gap:7px;margin-top:12px">
+            <button class="btn btn-outline btn-sm" style="color:#aaa;border-color:#333;background:transparent" onclick="showSU('onepager')">One-Pager →</button>
+            <button class="btn btn-outline btn-sm" style="color:#aaa;border-color:#333;background:transparent" onclick="showSU('investors')">Find Investors →</button>
+          </div>
+        </div>
+        <div style="text-align:right"><div class="irr-score-big" style="color:${ic}">${id}</div><div style="font-size:11px;color:#555;margin-top:4px;font-style:italic">out of 10</div></div>
+      </div>
+      <div class="cols-2 g14 mb12">
+        <div class="card card-sm"><div class="fw7 mb8" style="color:var(--green)">✦ Working in Your Favour</div>${['App/product live and publicly demonstrable','Incubator affiliation adds institutional credibility','Clear market gap — 12–18 month first-mover window','Sector macro tailwinds (RERA / 5G / policy push)'].map(p=>`<div style="font-size:12px;color:var(--ink3);padding:3px 0 3px 12px;position:relative"><span style="position:absolute;left:0;color:var(--green2)">•</span>${p}</div>`).join('')}</div>
+        <div class="card card-sm"><div class="fw7 mb8" style="color:var(--red)">⚠ Investor Push-Back Risks</div>${['No iOS app — excludes premium buyer segment','GST not registered despite reportable revenue','No trademark filing — unprotected at fundraising stage','Financial projections not credible — rebuild bottoms-up'].map(p=>`<div style="font-size:12px;color:var(--ink3);padding:3px 0 3px 12px;position:relative"><span style="position:absolute;left:0;color:var(--red)">•</span>${p}</div>`).join('')}</div>
+      </div>
+      <div class="card mb12"><div class="fw7 mb10">Investment Readiness Scorecard</div>${scores.map(([label,score,color,status])=>`<div class="score-row"><span class="score-label">${label}</span><div class="score-track"><div class="score-fill" style="width:${score*10}%;background:${color}"></div></div><span class="score-num" style="color:${color}">${score.toFixed(1)}</span><span class="score-status" style="color:${color}">${status}</span></div>`).join('')}</div>
+      <div class="card" style="background:rgba(201,72,0,.04);border-color:rgba(201,72,0,.18)"><div class="fw7 mb10">🗺 9-Month Roadmap to Fundable</div><div class="cols-4">${[['Q1 NOW','Legal Hygiene','File GST, trademark Class 35+36, draft SHA','var(--accent)'],['Q2','500+ Listings','Scale density · Lock in 2 cities · iOS launch','var(--gold)'],['Q3','₹25L ARR','Verified revenue · Rebuild projections bottomsup','var(--blue2)'],['Q4','Seed Close','₹75L–1.5Cr Pre-Seed via SAFE · 15–20%','var(--green2)']].map(([q,title,desc,color])=>`<div style="padding:10px;background:var(--white);border-radius:7px;border:1px solid var(--rule)"><div style="font-size:10px;color:${color};font-weight:700;margin-bottom:3px">${q}</div><div style="font-size:11.5px;font-weight:700;margin-bottom:3px">${title}</div><div style="font-size:10.5px;color:var(--ink4)">${desc}</div></div>`).join('')}</div></div>
+    </div>`;
+  }
+
+  else if(sc==='onepager') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Investor One-Pager — ${s.name}</div><div class="topbar-right">
+      <span class="ai-pill">✦ Claude AI</span>
+      <button class="btn btn-secondary btn-sm">✏️ Edit</button>
+      <button class="btn btn-green btn-sm" onclick="showSU('investors');toast('📧 One-pager ready — select investors to launch campaign')">📧 Campaign</button>
+      <button class="btn btn-primary btn-sm" onclick="toast('⬇ ${s.name}_OnePager.pdf downloading...')">⬇ PDF</button>
+    </div></div>
+    <div class="content">
+      <div class="op-preview">
+        <div class="op-hbar">
+          <div>
+            <div class="op-company">${s.name}</div>
+            <div class="op-tagline">${s.sector} · ${s.stage} · ${s.city}</div>
+            <div style="display:flex;gap:5px;margin-top:8px"><span class="badge b-orange">${s.sector}</span><span class="badge b-orange">${s.stage}</span></div>
+          </div>
+          <div style="text-align:right"><div class="op-ask-val">${s.ask}</div><div class="op-ask-lbl">Funding Ask</div><div class="op-ask-val" style="font-size:15px;margin-top:10px">15–20%</div><div class="op-ask-lbl">Equity</div></div>
+        </div>
+        <div class="op-metrics">
+          <div class="op-metric"><div class="op-metric-val">${s.irr?s.irr+'/10':'Pending'}</div><div class="op-metric-lbl">IRR Score</div></div>
+          <div class="op-metric"><div class="op-metric-val">${s.investors||'—'}</div><div class="op-metric-lbl">Investors Matched</div></div>
+          <div class="op-metric"><div class="op-metric-val">Android</div><div class="op-metric-lbl">Product Live</div></div>
+          <div class="op-metric"><div class="op-metric-val">12–18mo</div><div class="op-metric-lbl">First-Mover Window</div></div>
+        </div>
+        <div class="op-cols">
+          <div class="op-col">
+            <div class="op-col-title">The Opportunity</div>
+            <div class="op-li">${s.sector} market: ₹45–55Bn annually in target region</div>
+            <div class="op-li">Clear gap: existing platforms are metro-focused</div>
+            <div class="op-li">RERA / policy tailwinds accelerating formalisation</div>
+            <div class="op-li">Incubator backing adds institutional credibility</div>
+            <div class="op-col-title" style="margin-top:11px">Use of Funds</div>
+            <div class="op-li">30% — Product (iOS / platform scale)</div>
+            <div class="op-li">20% — Field operations & onboarding</div>
+            <div class="op-li">11% — Regional digital marketing</div>
+            <div class="op-li">10% — Legal & compliance</div>
+          </div>
+          <div class="op-col">
+            <div class="op-col-title">12-Month Milestones</div>
+            <div class="op-li">500+ verified listings across 2 cities</div>
+            <div class="op-li">GST + trademark filed (Class 35 + 36)</div>
+            <div class="op-li">iOS app launched Q2 2026</div>
+            <div class="op-li">₹25L verified ARR demonstrated</div>
+            <div class="op-col-title" style="margin-top:11px">Team</div>
+            <div class="op-li">${s.founder} — Founder & CEO</div>
+            <div class="op-li">CTO — Full-stack engineer</div>
+            <div class="op-li">Head of Operations</div>
+          </div>
+        </div>
+        <div style="padding:9px 14px;background:var(--bg2);border-top:1px solid var(--rule);display:flex;justify-content:space-between">
+          <div style="font-family:var(--serif);font-size:11px;color:var(--ink4)">Powered by FounderPort · MyProBuddy Investment Analysis</div>
+          <div style="font-size:11px;color:var(--ink4)">reachus@myprobuddy.com</div>
+        </div>
+      </div>
+    </div>`;
+
+  else if(sc==='pitchdeck') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Pitch Deck Builder — ${s.name}</div><div class="topbar-right">
+      <span class="ai-pill">✦ Claude AI · 10 credits</span>
+      <button class="btn btn-secondary btn-sm">✏️ Edit</button>
+      <button class="btn btn-primary btn-sm" onclick="toast('⬇ ${s.name}_FounderPort_Deck.pptx downloading...')">⬇ PPTX</button>
+    </div></div>
+    <div class="content">
+      <div class="callout co-blue mb12"><span>🎯</span><div><div class="fw7">12-slide deck generated from your profile. Review each slide before downloading.</div></div></div>
+      <div style="display:grid;grid-template-columns:195px 1fr;gap:14px">
+        <div class="card card-sm"><div class="fw7 mb8">Slides (12)</div>${['① Cover & Tagline','② Problem','③ Solution','④ Market (TAM/SAM/SOM)','⑤ Product Demo','⑥ Business Model','⑦ Traction & Metrics','⑧ Go-To-Market','⑨ Team','⑩ Financials','⑪ Competitive Landscape','⑫ The Ask'].map((sl,i)=>`<div style="padding:6px 9px;font-size:11px;cursor:pointer;border-radius:5px;margin-bottom:3px;background:${i===0?'rgba(201,72,0,.08)':'transparent'};color:${i===0?'var(--accent)':'var(--ink4)'};border:1px solid ${i===0?'rgba(201,72,0,.2)':'transparent'}" onclick="this.closest('.card').querySelectorAll('div').forEach(d=>{d.style.background='transparent';d.style.color='var(--ink4)';d.style.border='1px solid transparent'});this.style.background='rgba(201,72,0,.08)';this.style.color='var(--accent)';this.style.border='1px solid rgba(201,72,0,.2)'">${sl}</div>`).join('')}</div>
+        <div class="card" style="min-height:280px;background:linear-gradient(135deg,#0e0a20,#0a1828);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+          <div style="font-size:9px;color:#444;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px">Slide 1 of 12</div>
+          <div style="font-family:var(--serif);font-size:34px;font-weight:700;color:#fff;margin-bottom:7px">${s.name}</div>
+          <div style="font-size:14px;color:#888;margin-bottom:18px;max-width:320px">Democratising ${s.sector} access for India's emerging cities</div>
+          <div style="display:flex;gap:7px"><span class="badge b-orange">${s.sector}</span><span class="badge b-orange">${s.stage}</span><span class="badge b-orange">${s.ask}</span></div>
+          <div style="margin-top:26px;font-size:11px;color:#333">${s.founder} · ${s.city}</div>
+        </div>
+      </div>
+    </div>`;
+
+  else if(sc==='investors') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Matched Investors — ${s.name}</div><div class="topbar-right">
+      <span class="ai-pill">✦ EOD agent: 3 new today</span>
+      <button class="btn btn-secondary btn-sm" onclick="toast('⬇ InvestorList_${s.name}.csv downloading...')">⬇ CSV</button>
+      <button class="btn btn-primary btn-sm" onclick="toast('📧 Campaign queued — 12 personalised emails via n8n')">📧 Launch Campaign</button>
+    </div></div>
+    <div class="content">
+      <div style="display:flex;gap:7px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+        <input type="text" placeholder="Search investors..." style="width:200px">
+        <select style="width:120px"><option>All Stages</option><option>Angel</option><option>Pre-Seed</option></select>
+        <select style="width:130px"><option>All Sectors</option><option>PropTech</option><option>HR Tech</option></select>
+        <span class="text-muted">${s.investors||26} matched · Sorted by probability</span>
+      </div>
+      <div class="cols-2 g14">
+        <div>
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-bottom:8px">High Match (75%+)</div>
+          ${[['#7c3aed','SI','Speciale Invest','VC Fund · DeepTech, B2B SaaS','₹50L–₹3Cr',88,'var(--green2)'],['#1f5c35','CA','Chennai Angels','Network · South India','₹10L–₹75L',82,'var(--green2)'],['#163668','100X','100X.VC','Syndicate · All India','₹25L–₹1Cr',77,'var(--green2)'],['#b06c10','NL','🆕 NativeLead Angels','Network · TN · EOD Match','₹10L–₹1Cr',74,'#b06c10']].map(([bg,abbr,name,firm,ticket,prob,pc])=>`
+          <div class="inv-card">
+            <div class="inv-av" style="background:${bg}">${abbr}</div>
+            <div class="inv-info"><div class="inv-name">${name}</div><div class="inv-firm">${firm} · ${ticket}</div></div>
+            <div><div class="prob-wrap mb4"><div class="prob-track"><div class="prob-fill" style="width:${prob}%;background:${pc}"></div></div><span class="prob-val" style="color:${pc}">${prob}%</span></div>
+            <div style="display:flex;gap:4px"><button class="btn btn-green btn-xs" onclick="toast('📧 Draft ready for ${name}')">Select</button><button class="btn btn-outline btn-xs">Profile</button></div></div>
+          </div>`).join('')}
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-bottom:8px">Good Match (50–74%)</div>
+          ${[['#c94800','IAN','Indian Angel Network','Network · General India','₹25L–₹2Cr',68],['#1f4d96','IPV','Inflection Point Ventures','Fund · Consumer, RE','₹1Cr–₹5Cr',61],['#145858','CIBI','CIBI Angels','Network · TN/South','₹10L–₹50L',58],['#4a1f78','AH','Ah! Ventures','Platform · Early Stage','₹25L–₹2Cr',54]].map(([bg,abbr,name,firm,ticket,prob])=>`
+          <div class="inv-card">
+            <div class="inv-av" style="background:${bg}">${abbr}</div>
+            <div class="inv-info"><div class="inv-name">${name}</div><div class="inv-firm">${firm} · ${ticket}</div></div>
+            <div class="prob-wrap"><div class="prob-track"><div class="prob-fill" style="width:${prob}%;background:var(--accent2)"></div></div><span class="prob-val" style="color:var(--accent2)">${prob}%</span></div>
+          </div>`).join('')}
+          <div style="margin-top:10px;padding:11px 13px;background:var(--blue3);border-radius:8px;border:1px solid rgba(22,54,104,.2)">
+            <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:3px">📧 n8n Campaign Ready</div>
+            <div style="font-size:11px;color:var(--blue2)">4 investors selected. One-pager attached. Personalised per investor. Day 5 & 10 follow-ups automated.</div>
+            <button class="btn btn-blue btn-sm mt8" onclick="toast('🚀 Campaign launched — 4 emails sent. Track in Outreach tab.')">🚀 Launch — 5 Credits</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  else if(sc==='outreach') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Outreach Tracker</div><div class="topbar-right"><button class="btn btn-secondary btn-sm" onclick="toast('+ New campaign created')">+ New Campaign</button></div></div>
+    <div class="content">
+      <div class="sg sg-4 mb14"><div class="stat-card"><div class="stat-val">48</div><div class="stat-label">Emails Sent</div></div><div class="stat-card" style="border-top:3px solid var(--blue)"><div class="stat-val" style="color:var(--blue)">11</div><div class="stat-label">Responses</div></div><div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">4</div><div class="stat-label">Meetings Booked</div></div><div class="stat-card" style="border-top:3px solid var(--gold)"><div class="stat-val" style="color:var(--gold)">23%</div><div class="stat-label">Response Rate</div></div></div>
+      <div class="card"><div class="fw7 mb10">Campaign History</div><table class="tbl"><thead><tr><th>Investor</th><th>Status</th><th>Sent</th><th>Opened</th><th>Replied</th><th>Next Step</th></tr></thead><tbody>
+        ${[['Speciale Invest','Meeting Booked','May 10','✓','✓','Prep DD docs'],['Chennai Angels','Replied — Positive','May 10','✓','✓','Schedule call'],['100X.VC','Opened — No Reply','May 10','✓','—','Day 5 follow-up'],['IAN','Sent','May 12','—','—','Day 3 opens'],['IPV','Follow-up Sent','May 12','✓','—','Day 10 scheduled']].map(([inv,status,sent,opened,replied,next])=>`<tr>
+          <td class="tbl-name">${inv}</td>
+          <td><span class="badge ${status.includes('Meeting')?'b-green':status.includes('Positive')?'b-blue':status.includes('Follow')?'b-gold':'b-gray'}">${status}</span></td>
+          <td>${sent}</td><td>${opened}</td><td>${replied}</td>
+          <td><div style="display:flex;gap:4px"><button class="btn btn-outline btn-xs" onclick="toast('📧 Follow-up drafted for ${inv}')">Follow-up</button><button class="btn btn-outline btn-xs" onclick="toast('Opening ${inv} thread...')">View</button></div></td>
+        </tr>`).join('')}
+      </tbody></table></div>
+    </div>`;
+
+  else if(sc==='grants') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Grants & Non-Dilutive Funding</div><div class="topbar-right"><span class="ai-pill">✦ 500+ schemes tracked</span><button class="btn btn-secondary btn-sm" onclick="toast('💾 Shortlist saved — alerts set for deadlines')">Save Shortlist</button></div></div>
+    <div class="content">
+      <div class="callout co-green">✦ Matched <strong>${s.grants||5} grants</strong> for ${s.name}. Sorted by eligibility. <strong>2 deadlines within 30 days.</strong></div>
+      ${[['DST NIDHI PRAYAS','TBI · PoC grant · DPIIT preferred · via incubator','₹10L – ₹25L (non-dilutive)','92%','var(--green3)','var(--green)','June 30'],['Startup India SISFS','DPIIT recognised · Pre-revenue early stage','₹20L – ₹50L (via incubator)','87%','var(--green3)','var(--green)','Aug 15'],['TN RISE','Tamil Nadu-based startups · PropTech / Social Impact','₹5L – ₹15L (state)','74%','var(--gold3)','var(--gold)','Rolling'],['SIDBI SPEED','Early-stage startups · Repayable grant hybrid','₹10L – ₹25L','61%','var(--gold3)','var(--gold)','Sept 30'],['BIRAC BIG','Biotech / lifesciences · low match for '+s.sector,'₹50L (if eligible)','38%','var(--red3)','var(--red)','Closed']].map(([name,body,amount,elig,bgColor,tc,deadline])=>`
+      <div class="grant-card">
+        <div class="grant-elig" style="background:${bgColor};color:${tc}"><div style="font-size:8px">ELIG</div><div>${elig}</div></div>
+        <div style="flex:1"><div style="font-weight:700;font-size:12px">${name}</div><div style="font-size:11px;color:var(--ink4);margin-top:2px">${body}</div><div style="font-family:var(--mono);font-size:11px;font-weight:600;color:var(--green);margin-top:3px">${amount}</div></div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:10px;font-weight:700;color:${deadline==='June 30'?'var(--red)':deadline==='Rolling'?'var(--ink4)':'var(--gold)'};margin-bottom:5px">⏰ ${deadline}</div><button class="btn btn-green btn-xs" onclick="toast('📋 Checklist for ${name} — 8 documents required')">Checklist</button><div style="margin-top:4px"><button class="btn btn-secondary btn-xs" onclick="toast('📞 MPB grants team (Kesavaraj) will assist — ₹5K fee')">MPB Assist</button></div></div>
+      </div>`).join('')}
+    </div>`;
+
+  else if(sc==='gtm') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">GTM Strategy — ${s.name}</div><div class="topbar-right"><span class="ai-pill">✦ 5 credits</span><button class="btn btn-primary btn-sm" onclick="toast('⬇ GTM_${s.name}.pdf downloading...')">⬇ PDF</button></div></div>
+    <div class="content">
+      <div class="callout co-orange"><span>📈</span><div><div class="fw7">AI-Generated GTM for ${s.name} · ${s.sector}</div><div class="text-sm text-muted mt4">Based on profile, market data, and comparable companies in ${s.sector}.</div></div></div>
+      <div class="cols-2 g14 mb14">
+        ${[['🎯 Target Segments','Primary: Tier-2/3 city property buyers (25–45yr)\nSecondary: Registered RERA brokers in Tamil Nadu\nTertiary: Property developers seeking digital reach','var(--accent)'],['📣 Channels','Regional: Tamil social media (Vijay TV tie-ins)\nContent: Tamil-language YouTube property guides\nNetwork: RERA broker forums & associations\nPaid: Google Local & regional vernacular ads','var(--blue)'],['💰 Pricing Strategy','Freemium listing model\nBroker subscription: ₹500–2K/month\nDeveloper premium: ₹5K–25K/project\nTransaction commission: 0.5–1% long-term','var(--green)'],['🤝 Partnerships','Anna University Incubation — credibility\nTamil Nadu RERA — regulatory alignment\nLocal brokers — listing network\nBuilding materials brands — co-marketing','var(--gold)']].map(([title,body,color])=>`
+        <div class="card"><div style="font-weight:700;margin-bottom:8px;color:${color}">${title}</div>${body.split('\n').map(l=>`<div style="font-size:12px;color:var(--ink3);padding:3px 0 3px 11px;position:relative"><span style="position:absolute;left:0;color:${color};font-size:10px">→</span>${l}</div>`).join('')}</div>`).join('')}
+      </div>
+      <div class="card"><div class="fw7 mb10">90-Day GTM Sprint</div><div class="cols-3">${[['Month 1','Foundations','File GST + trademark · Build 50-broker WhatsApp network · Launch Tamil YouTube channel · 100 verified listings'],['Month 2','Traction','500 listings · 20 broker partners · First ₹1L revenue · Case study video · Apply TN RISE grant'],['Month 3','Scale','1000 listings · Paid Google ads TN cities · iOS beta testing · Seed fundraise conversations begin']].map(([m_,title,body])=>`<div style="padding:12px;background:var(--bg2);border-radius:8px;border:1px solid var(--rule)"><div style="font-size:9px;color:var(--accent);font-weight:800;letter-spacing:.1em;margin-bottom:4px">${m_}</div><div style="font-size:12px;font-weight:700;margin-bottom:6px">${title}</div><div style="font-size:11px;color:var(--ink4);line-height:1.6">${body}</div></div>`).join('')}</div></div>
+    </div>`;
+
+  else if(sc==='financial') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Financial Model Builder</div><div class="topbar-right"><span class="ai-pill">✦ 8 credits</span><button class="btn btn-primary btn-sm" onclick="toast('⬇ FinancialModel_${s.name}.xlsx downloading...')">⬇ Excel</button></div></div>
+    <div class="content">
+      <div class="callout co-gold"><span>🧮</span><div><div class="fw7">Financial projections built bottoms-up from unit economics — not top-down guesses. Investors trust this.</div></div></div>
+      <div class="cols-2 g14 mb14">
+        <div class="card"><div class="fw7 mb10">Unit Economics Inputs</div>
+          <div class="fg2">
+            <div class="fr"><label>Monthly New Users</label><input type="number" value="200"></div>
+            <div class="fr"><label>Paid Conversion Rate</label><input type="text" value="8%"></div>
+            <div class="fr"><label>Avg Revenue / User</label><input type="text" value="₹1,200/mo"></div>
+            <div class="fr"><label>Churn Rate</label><input type="text" value="12%/mo"></div>
+            <div class="fr"><label>CAC</label><input type="text" value="₹450"></div>
+            <div class="fr"><label>Gross Margin</label><input type="text" value="55%"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="toast('⚡ Projections rebuilt — 3-year model updated')">⚡ Rebuild Projections</button>
+        </div>
+        <div class="card"><div class="fw7 mb10">3-Year Projection</div>
+          <table class="tbl"><thead><tr><th>Metric</th><th>FY26</th><th>FY27</th><th>FY28</th></tr></thead><tbody>
+            <tr><td class="fw6">Revenue (₹)</td><td>28L</td><td>1.4Cr</td><td>4.8Cr</td></tr>
+            <tr><td class="fw6">Gross Margin</td><td>42%</td><td>52%</td><td>58%</td></tr>
+            <tr><td class="fw6">Net Burn</td><td>-42L</td><td>-28L</td><td>+12L</td></tr>
+            <tr><td class="fw6">Active Users</td><td>320</td><td>1,800</td><td>5,400</td></tr>
+            <tr><td class="fw6">Cash Needed</td><td colspan="3">₹1Cr (fundraising now)</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+      <div class="card"><div class="fw7 mb10">Monthly Revenue Trend (12 months)</div><div class="rev-bar-wrap" id="rev-fin"></div><div style="display:flex;margin-top:3px" id="rev-fin-lbl"></div></div>
+    </div>`;
+
+  else if(sc==='competitor') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Competitor Intelligence — ${s.sector}</div><div class="topbar-right"><span class="ai-pill">✦ 4 credits · web scraped</span><button class="btn btn-primary btn-sm" onclick="toast('⬇ CompBrief_${s.name}.pdf downloading...')">⬇ PDF</button></div></div>
+    <div class="content">
+      <div class="card mb13"><div class="fw7 mb10">Competitive Landscape</div>
+        <table class="tbl"><thead><tr><th>Company</th><th>Focus</th><th>Geography</th><th>Funding</th><th>Your Advantage</th></tr></thead><tbody>
+          ${[['99acres','Listings + brokers','Metro India','Info Edge-backed','You: Tier-2/3 vernacular focus, RERA-verified'],['MagicBricks','Listings + agents','Metro India','Times Group-backed','You: Tamil-first UX, broker-centric model'],['Housing.com','Consumer listings','Metro India','REA Group-backed','You: Regional penetration, lower CAC'],['NoBroker','Owner-to-buyer','Pan India','$210Mn raised','You: Broker-inclusive (not disrupting brokers)'],['PropTiger','Premium properties','Tier-1 India','News Corp-backed','You: Affordable segment, local trust network']].map(([name,focus,geo,funding,advantage])=>`<tr><td class="tbl-name">${name}</td><td class="text-sm">${focus}</td><td class="text-sm">${geo}</td><td class="text-sm">${funding}</td><td style="font-size:11px;color:var(--green);font-weight:600">${advantage}</td></tr>`).join('')}
+        </tbody></table>
+      </div>
+      <div class="cols-2 g14"><div class="card card-sm"><div class="fw7 mb8" style="color:var(--green)">✦ Your White Space</div><div style="font-size:12px;color:var(--ink3)">No national platform targets Tamil Nadu Tier-2/3 cities with vernacular support and broker-first model. 12–18 month first-mover window before national players react.</div></div><div class="card card-sm"><div class="fw7 mb8" style="color:var(--red)">⚠ Threats to Watch</div><div style="font-size:12px;color:var(--ink3)">99acres has budget to launch regional campaigns quickly. NoBroker's broker model pivot could squeeze positioning. Watch MagicBricks TN PR spend.</div></div></div>
+    </div>`;
+
+  else if(sc==='invoice') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Invoice Generator</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('⬇ Invoice_${s.name}_001.pdf downloading...')">⬇ Generate PDF</button></div></div>
+    <div class="content"><div class="cols-2 g14">
+      <div class="card"><div class="fw7 mb12">Invoice Details</div>
+        <div class="fg2">
+          <div class="fr fc"><label>From (Your Company)</label><input type="text" value="${s.name}"></div>
+          <div class="fr fc"><label>Bill To</label><input type="text" placeholder="Client name"></div>
+          <div class="fr"><label>Invoice No.</label><input type="text" value="INV/MAY26/001"></div>
+          <div class="fr"><label>Date</label><input type="text" value="May 16, 2026"></div>
+          <div class="fr fc"><label>Description</label><textarea>Platform subscription fee for May 2026</textarea></div>
+          <div class="fr"><label>Amount (₹)</label><input type="text" value="10,000"></div>
+          <div class="fr"><label>GST 18% (₹)</label><input type="text" value="1,800" readonly></div>
+        </div>
+        <button class="btn btn-primary" onclick="toast('📄 GST-compliant invoice generated')">Generate Invoice</button>
+      </div>
+      <div class="card" style="background:var(--bg2)"><div class="fw7 mb10">Preview</div>
+        <div style="background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:16px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:14px"><div><div style="font-family:var(--serif);font-size:15px;font-weight:700">${s.name}</div><div style="font-size:11px;color:var(--ink4)">${s.city}</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--accent)">INVOICE</div><div style="font-size:11px;color:var(--ink4)">INV/MAY26/001</div></div></div>
+          <div style="background:var(--bg2);border-radius:6px;padding:10px;margin-bottom:12px"><table style="width:100%;font-size:11px"><tr><td style="padding:3px 0;color:var(--ink4)">Service</td><td style="text-align:right;font-weight:600">Platform subscription</td></tr><tr><td style="padding:3px 0;color:var(--ink4)">Amount</td><td style="text-align:right">₹10,000</td></tr><tr><td style="padding:3px 0;color:var(--ink4)">GST (18%)</td><td style="text-align:right">₹1,800</td></tr><tr style="border-top:1px solid var(--rule)"><td style="padding:5px 0;font-weight:700">Total</td><td style="text-align:right;font-weight:700;color:var(--accent)">₹11,800</td></tr></table></div>
+          <div style="font-size:10px;color:var(--ink4)">GST-compliant · Payment due 15 days</div>
+        </div>
+      </div>
+    </div></div>`;
+
+  else if(sc==='brochure') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Product Brochure — ${s.name}</div><div class="topbar-right"><span class="ai-pill">✦ 4 credits</span><button class="btn btn-primary btn-sm" onclick="toast('⬇ Brochure_${s.name}.pdf downloading...')">⬇ PDF</button></div></div>
+    <div class="content"><div style="border:1px solid var(--rule);border-radius:10px;overflow:hidden"><div style="background:linear-gradient(135deg,${s.color},${s.color}aa);padding:22px;color:#fff"><div style="font-family:var(--serif);font-size:26px;font-weight:700;margin-bottom:5px">${s.name}</div><div style="font-size:13px;opacity:.8">${s.sector} · Making a difference in ${s.city.split(',')[0]}</div></div><div style="padding:18px;background:var(--white)"><div class="cols-2 g14"><div><div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em">What We Do</div><div style="font-size:12px;color:var(--ink3);line-height:1.7">Building the leading ${s.sector} platform for India's emerging cities — serving buyers, brokers, and developers with technology previously available only in metros.</div></div><div><div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em">Why Us</div><div style="font-size:12px;color:var(--ink3);line-height:1.7">Founded by ${s.founder} with domain expertise. Backed by a leading incubation centre. Building in public with early traction and growing community.</div></div></div><div style="margin-top:14px;padding:12px;background:var(--bg2);border-radius:8px;text-align:center"><div style="font-size:12px;color:var(--ink4)">Contact · ${s.id}@${s.id}.in · ${s.city}</div></div></div></div></div>`;
+
+  else if(sc==='hr') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">HR Tools</div><div class="topbar-right"><span class="ai-pill">✦ AI-generated docs</span></div></div>
+    <div class="content">
+      <div class="cols-3 g12 mb14">${[['📝','Offer Letter','Professional offer with CTC breakdown','3 credits'],['🤝','NDA','Non-disclosure agreement','2 credits'],['📋','Employment Contract','Full-time agreement','3 credits'],['🎓','Relieving Letter','Exit & experience letter','2 credits'],['📊','Salary Structure','CTC breakdown with compliance','2 credits'],['🏠','WFH Policy','Remote work policy template','1 credit']].map(([icon,title,desc,cost])=>`<div class="card card-sm" style="cursor:pointer;text-align:center" onclick="toast('⚡ Generating ${title} for ${s.name}...')" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--rule)'"><div style="font-size:20px;margin-bottom:7px">${icon}</div><div class="fw7 mb4">${title}</div><div class="text-muted mb8">${desc}</div><span class="ai-pill">✦ ${cost}</span></div>`).join('')}</div>
+      <div class="card"><div class="fw7 mb10">Quick Offer Letter</div><div class="fg3"><div class="fr"><label>Employee Name</label><input type="text" placeholder="Full name"></div><div class="fr"><label>Designation</label><input type="text" placeholder="Software Engineer"></div><div class="fr"><label>CTC Annual (₹)</label><input type="text" placeholder="6,00,000"></div><div class="fr"><label>Start Date</label><input type="text" placeholder="June 1, 2026"></div><div class="fr"><label>Reporting To</label><input type="text" value="${s.founder}"></div><div class="fr"><label>Location</label><input type="text" value="${s.city}"></div></div><button class="btn btn-primary mt8" onclick="toast('📝 Offer letter generated and ready for download')">Generate Offer Letter</button></div>
+    </div>`;
+
+  else if(sc==='cofounder') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Co-Founder Agreement</div><div class="topbar-right"><span class="ai-pill">✦ 5 credits · Legal review advised</span><button class="btn btn-primary btn-sm" onclick="toast('⬇ CoFounder_Agreement_${s.name}.pdf downloading...')">⬇ PDF</button></div></div>
+    <div class="content">
+      <div class="callout co-gold"><span>⚠️</span><div><div class="fw7">AI-generated for reference. Always get CA/lawyer to review before signing. IndiJuris (service partner) reviews for ₹5K flat fee.</div></div></div>
+      <div class="card"><div class="fw7 mb12">Agreement Details</div>
+        <div class="fg2">
+          <div class="fr"><label>Founder 1</label><input type="text" value="${s.founder}"></div>
+          <div class="fr"><label>Founder 2</label><input type="text" placeholder="Co-founder name"></div>
+          <div class="fr"><label>F1 Equity %</label><input type="text" value="60%"></div>
+          <div class="fr"><label>F2 Equity %</label><input type="text" value="40%"></div>
+          <div class="fr"><label>Vesting</label><select><option>4-year vest, 1-year cliff</option><option>3-year vest, 6-month cliff</option></select></div>
+          <div class="fr"><label>Decisions</label><select><option>Unanimous for major decisions</option><option>Proportional voting</option></select></div>
+          <div class="fr fc"><label>F1 Responsibilities</label><textarea>Product, technology, fundraising, investor relations</textarea></div>
+          <div class="fr fc"><label>F2 Responsibilities</label><textarea>Sales, partnerships, operations, customer success</textarea></div>
+          <div class="fr"><label>IP Assignment</label><select><option>All IP assigned to company</option></select></div>
+          <div class="fr"><label>Non-Compete</label><select><option>24 months post-exit</option><option>12 months</option></select></div>
+        </div>
+        <button class="btn btn-primary mt8" onclick="toast('📄 Co-founder agreement generated — 8 pages')">Generate Agreement</button>
+      </div>
+    </div>`;
+
+  else if(sc==='marketplace') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Service Partner Marketplace</div><div class="topbar-right"><span class="text-muted text-sm">All vetted by MPB team</span></div></div>
+    <div class="content">
+      <div class="callout co-blue"><span>🛒</span><div><div class="fw7">Vetted service partners for startups at every stage. Special rates negotiated by MyProBuddy.</div></div></div>
+      <div class="cols-2 g14">${[['⚖️','IndiJuris','Legal Services','Company registration, SHA, IP filing, compliance','₹5K–₹25K','var(--blue)','b-blue'],['🧾','TaxSave CAs','CA & Finance','GST filing, tax returns, financial model review','₹2K–₹8K','var(--green)','b-green'],['🎨','Brandify Studio','Design & Brand','Logo, pitch deck design, brand identity','₹8K–₹30K','var(--purple)','b-purple'],['☁️','AWS Activate India','Cloud Credits','₹3.5L AWS credits for eligible startups','Free tier','var(--accent)','b-orange'],['📱','AppCraft Studio','App Dev','iOS/Android MVP in 8–12 weeks','₹80K–₹3L','var(--teal)','b-teal'],['📊','DataDriven Analytics','Market Research','TAM/SAM reports, competitor analysis','₹5K–₹15K','var(--gold)','b-gold']].map(([icon,name,cat,desc,price,color,badge])=>`
+      <div class="card flex g12" style="cursor:pointer" onclick="toast('📞 Connecting you with ${name}...')">
+        <div style="font-size:22px">${icon}</div>
+        <div style="flex:1"><div class="flex fx-b"><div class="fw7">${name}</div><span class="badge ${badge}">${cat}</span></div><div class="text-sm text-muted mt4">${desc}</div><div class="flex fx-b mt8"><span style="font-family:var(--mono);font-size:11px;font-weight:700;color:${color}">${price}</span><button class="btn btn-outline btn-xs" onclick="event.stopPropagation();toast('📞 ${name} will reach out within 24 hours')">Connect</button></div></div>
+      </div>`).join('')}
+      </div>
+    </div>`;
+
+  else if(sc==='buildproduct') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Build My Product</div><div class="topbar-right"><span class="ai-pill">✦ myprobuddy.ai</span></div></div>
+    <div class="content">
+      <div style="background:linear-gradient(135deg,rgba(201,72,0,.08),rgba(201,72,0,.03));border:1px solid rgba(201,72,0,.2);border-radius:12px;padding:22px;margin-bottom:16px;text-align:center"><div style="font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:5px">Need a tech team to build your product?</div><div style="font-size:13px;color:var(--ink4);margin-bottom:14px">myprobuddy.ai has built 15+ AI-powered platforms in 90 days. We can build yours too.</div><button class="btn btn-primary" onclick="toast('📞 Amrish will call you within 24 hours to discuss your requirements')">🏗 Request a Build Consultation</button></div>
+      <div class="cols-3 g12">${[['⚡ Fast','Built in 8–16 weeks using proven AI-accelerated stack'],['🤖 AI-Native','Claude + Gemini APIs integrated from day one'],['💰 Startup-Friendly','Equity + cash hybrid models available'],['🔧 Full Stack','Next.js, FastAPI, cloud deployment — production-ready'],['🛡 Post-Launch','3-month support included. SLA maintenance available'],['🏆 Track Record','Seragen, MiTran, CataLab — all live, serving real users']].map(([title,desc])=>`<div class="card card-sm"><div class="fw7 mb4">${title}</div><div class="text-sm text-muted">${desc}</div></div>`).join('')}</div>
+    </div>`;
+
+  else if(sc==='billing') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Credits & Billing</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('💳 Razorpay checkout opening...')">Buy Credits</button></div></div>
+    <div class="content">
+      <div class="sg sg-3 mb14"><div class="stat-card" style="border-top:3px solid var(--accent)"><div class="stat-val" style="color:var(--accent)">${s.credits}</div><div class="stat-label">Credits Remaining</div></div><div class="stat-card"><div class="stat-val">7</div><div class="stat-label">Credits Used Today</div></div><div class="stat-card"><div class="stat-val">${7+(50-s.credits)}</div><div class="stat-label">Total Used This Month</div></div></div>
+      <div class="cols-2 g14 mb14">
+        <div><div class="fw7 mb10">Plans</div>${[['Free','₹0','50 credits on signup.','b-gray'],['Starter','₹999/mo','300 credits/month.','b-orange'],['Growth','₹2,499/mo','1,000 credits/month.','b-green']].map(([name,price,desc,badge])=>`<div class="plan-card mb8" onclick="toast('💳 Razorpay — ${name}')"><div class="flex fx-b"><div><div class="fw7">${name} <span class="badge ${badge}">${price}</span></div><div class="text-muted mt4">${desc}</div></div><button class="btn btn-primary btn-xs">Select</button></div></div>`).join('')}</div>
+        <div class="card card-sm"><div class="fw7 mb10">Credit Costs</div>${[['IRR Report','5'],['One-Pager','3'],['Pitch Deck','10'],['Investor Search','2'],['Grant Search','1'],['n8n Campaign','5'],['GTM Strategy','5'],['Financial Model','8'],['Competitor Brief','4'],['Invoice','1'],['HR Documents','2–3'],['Co-Founder Agmt.','5']].map(([i_,c])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--rule);font-size:12px"><span>${i_}</span><span class="fw6" style="color:var(--accent)">${c} cr</span></div>`).join('')}</div>
+      </div>
+      <div class="card"><div class="fw7 mb10">Transaction History</div><table class="tbl"><thead><tr><th>Date</th><th>Action</th><th>Credits</th><th>Balance</th></tr></thead><tbody><tr><td>May 16</td><td>IRR Report generated</td><td style="color:var(--red);font-weight:700">-5</td><td style="font-family:var(--mono)">43</td></tr><tr><td>May 15</td><td>Investor search</td><td style="color:var(--red);font-weight:700">-2</td><td style="font-family:var(--mono)">48</td></tr><tr><td>May 14</td><td>Signup bonus</td><td style="color:var(--green);font-weight:700">+50</td><td style="font-family:var(--mono)">50</td></tr></tbody></table></div>
+    </div>`;
+
+  else if(sc==='settings') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Settings — ${s.name}</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('✓ Settings saved')">Save Changes</button></div></div>
+    <div class="content">
+      <div class="cols-2 g14">
+        <div class="card"><div class="fw7 mb12">Account</div><div class="fr"><label>Company Name</label><input type="text" value="${s.name}"></div><div class="fr"><label>Email</label><input type="email" value="${s.id}@${s.id}.in"></div><div class="fr"><label>Phone</label><input type="tel" value="+91 98765 43210"></div><div class="fr"><label>City</label><input type="text" value="${s.city}"></div></div>
+        <div class="card"><div class="fw7 mb12">Notifications</div>${[['New investor match','On'],['Campaign response','On'],['Grant deadline alert','On'],['Profile improvement tip','Off'],['Weekly report','On']].map(([label,def])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule)"><span style="font-size:12px">${label}</span><div class="toggle" style="background:${def==='On'?'var(--green)':'var(--rule2)'}" onclick="this.style.background=this.style.background.includes('122')?'var(--rule2)':'var(--green)'"><div class="toggle-knob" style="${def==='On'?'right:2px':'left:2px'}"></div></div></div>`).join('')}</div>
+        <div class="card"><div class="fw7 mb8">Privacy & DPDP</div><div class="text-sm text-muted mb8">Your data is handled as per DPDP Act 2023. Consent captured and timestamped.</div><button class="btn btn-outline btn-sm" onclick="toast('📄 Data report generated')">Download My Data</button><button class="btn btn-outline btn-sm" style="margin-left:7px;color:var(--red);border-color:var(--red)" onclick="toast('⚠ Data deletion request submitted — 30 day process')">Delete My Data</button></div>
+        <div class="card"><div class="fw7 mb8">Referral Program</div><div class="text-sm text-muted mb8">Refer another founder — get 20 bonus credits when they sign up.</div><div style="background:var(--bg2);border-radius:7px;padding:8px 11px;font-family:var(--mono);font-size:12px;letter-spacing:.08em">REFER-${s.id.toUpperCase().slice(0,6)}-2026</div><button class="btn btn-primary btn-sm mt8" onclick="toast('🔗 Referral link copied!')">Copy Referral Link</button></div>
+      </div>
+    </div>`;
+
+  // Rev chart
+  if(sc==='financial'){
+    setTimeout(()=>{
+      const vals=[2,4,6,8,11,15,18,22,26,28,32,38];
+      const el=document.getElementById('rev-fin');
+      const ll=document.getElementById('rev-fin-lbl');
+      if(!el)return;
+      const mx=Math.max(...vals);
+      el.innerHTML=vals.map(v=>`<div class="rev-bar" style="height:${v/mx*100}%"></div>`).join('');
+      ll.innerHTML=vals.map((_,i)=>`<div class="rev-bar-lbl" style="flex:1">M${i+1}</div>`).join('');
+    },100);
+  }
+}
+
+// ─────── INVESTOR SCREENS ───────
+function renderIN(sc){
+  const m=document.getElementById('in-main');
+  if(sc==='inv-dashboard') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Investor Dashboard — Speciale Invest</div><div class="topbar-right"><span class="ai-pill">✦ 14 new matches today</span><button class="btn btn-primary btn-sm" onclick="showIN('inv-dealflow')">View Deal Flow →</button></div></div>
+    <div class="content">
+      <div class="sg sg-4"><div class="stat-card" style="border-top:3px solid var(--purple)"><div class="stat-val" style="color:var(--purple)">14</div><div class="stat-label">New Matches Today</div></div><div class="stat-card" style="border-top:3px solid var(--blue)"><div class="stat-val" style="color:var(--blue)">86</div><div class="stat-label">Total in Pipeline</div></div><div class="stat-card" style="border-top:3px solid var(--gold)"><div class="stat-val" style="color:var(--gold)">7</div><div class="stat-label">Interest Expressed</div></div><div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">2</div><div class="stat-label">In Due Diligence</div></div></div>
+      <div class="cols-2 g14">
+        <div class="card"><div class="flex fx-b mb12"><div class="sec-title">Top Matches Today</div><span class="ai-pill">✦ Mandate-matched</span></div>${STARTUPS.map((s,i)=>`<div class="su-card" onclick="showIN('inv-dealflow');toast('Opening ${s.name} profile...')"><div class="su-logo" style="background:${s.color}">${s.abbr}</div><div style="flex:1"><div class="su-name">${s.name}</div><div class="su-meta">${s.sector} · ${s.stage} · ${s.city}</div><div class="su-badges">${s.irr?`<span class="badge b-orange">IRR: ${s.irr}/10</span>`:'<span class="badge b-gray">IRR Pending</span>'}<span class="badge b-blue">${s.ask}</span></div></div><div class="prob-wrap"><div class="prob-track"><div class="prob-fill" style="width:${78-i*8}%;background:var(--green2)"></div></div><span class="prob-val" style="color:var(--green2)">${78-i*8}%</span></div></div>`).join('')}</div>
+        <div class="card"><div class="sec-title mb12">My Mandate Summary</div>${[['Sectors','DeepTech, B2B SaaS, Regional Platforms'],['Stage','Pre-Seed, Seed'],['Geography','South India, Pan India'],['Ticket Size','₹50L – ₹3Cr'],['Min IRR Score','4.0 / 10'],['Revenue Required','Not required'],['DPIIT Status','Preferred, not mandatory']].map(([k,v])=>`<div style="display:flex;gap:10px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--rule)"><span style="color:var(--ink4);min-width:118px;font-weight:600">${k}</span><span>${v}</span></div>`).join('')}<button class="btn btn-outline btn-sm mt10" onclick="showIN('inv-mandate')">Edit Mandate →</button></div>
+      </div>
+    </div>`;
+
+  else if(sc==='inv-dealflow') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Deal Flow Inbox</div><div class="topbar-right"><select style="width:130px"><option>All Stages</option><option>Pre-Seed</option></select><select style="width:130px"><option>All Sectors</option><option>PropTech</option></select></div></div>
+    <div class="content"><div class="card"><table class="tbl"><thead><tr><th>Startup</th><th>Sector</th><th>Ask</th><th>IRR</th><th>Match</th><th>Received</th><th>Action</th></tr></thead><tbody>${STARTUPS.map((s,i)=>`<tr onclick="toast('Opening ${s.name} full profile...')"><td><div class="flex fx-c g8"><div class="su-logo" style="background:${s.color};width:26px;height:26px;font-size:10px;border-radius:5px">${s.abbr}</div><div class="tbl-name">${s.name}<div class="tbl-sub">${s.city}</div></div></div></td><td><span class="badge b-orange">${s.sector}</span></td><td style="font-family:var(--mono)">${s.ask}</td><td><span style="font-family:var(--mono);color:${s.irrColor};font-weight:700">${s.irr?s.irr:'-'}</span></td><td><div class="prob-wrap"><div class="prob-track"><div class="prob-fill" style="width:${78-i*8}%;background:var(--green2)"></div></div><span class="prob-val" style="color:var(--green2)">${78-i*8}%</span></div></td><td class="text-muted">May ${16-i}</td><td><div style="display:flex;gap:4px"><button class="btn btn-green btn-xs" onclick="event.stopPropagation();toast('⭐ Interest expressed for ${s.name}')">Express Interest</button><button class="btn btn-outline btn-xs" onclick="event.stopPropagation();toast('Passed on ${s.name}')">Pass</button></div></td></tr>`).join('')}</tbody></table></div></div>`;
+
+  else if(sc==='inv-browse') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Browse Startups</div><div class="topbar-right"><input type="text" placeholder="Search..." style="width:220px"><button class="btn btn-secondary btn-sm">Filters</button></div></div>
+    <div class="content"><div class="cols-2 g14">${STARTUPS.map(s=>`<div class="card" style="cursor:pointer" onclick="toast('Opening ${s.name} profile...')"><div class="flex g12 mb10"><div class="su-logo" style="background:${s.color}">${s.abbr}</div><div style="flex:1"><div class="su-name">${s.name}</div><div class="text-sm text-muted">${s.sector} · ${s.stage} · ${s.city}</div></div><span class="badge ${s.irr?'b-orange':'b-gray'}">${s.irr?'IRR: '+s.irr:'Pending'}</span></div><div><div class="prog-label"><span>Profile Complete</span><span style="font-weight:700">${s.irr?72:58}%</span></div><div class="prog-track"><div class="prog-fill" style="width:${s.irr?72:58}%"></div></div></div><div style="display:flex;gap:5px;margin-top:8px"><button class="btn btn-green btn-xs" onclick="event.stopPropagation();toast('⭐ Interest expressed for ${s.name}')">Express Interest</button><button class="btn btn-outline btn-xs" onclick="event.stopPropagation()">Full Profile</button><button class="btn btn-secondary btn-xs" onclick="event.stopPropagation();toast('📥 One-pager downloaded')">One-Pager</button></div></div>`).join('')}</div></div>`;
+
+  else if(sc==='inv-mandate') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">My Investment Mandate</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('✓ Mandate saved — matching engine re-runs tonight')">Save Mandate</button></div></div>
+    <div class="content"><div class="callout co-blue"><span>💼</span><div><div class="fw7">Your mandate drives deal flow. Be specific — more precision = better matches.</div></div></div>
+    <div class="card"><div class="fg2"><div class="fr fc"><label>Preferred Sectors</label><input type="text" value="DeepTech, B2B SaaS, Regional Platforms, PropTech, HR Tech"></div><div class="fr"><label>Min Stage</label><select><option>Pre-Seed</option><option>Seed</option></select></div><div class="fr"><label>Max Stage</label><select><option>Seed</option><option selected>Series A</option></select></div><div class="fr"><label>Min Ticket (₹)</label><input type="text" value="50L"></div><div class="fr"><label>Max Ticket (₹)</label><input type="text" value="3Cr"></div><div class="fr"><label>Min IRR Score</label><select><option>3.0</option><option selected>4.0</option><option>5.0</option></select></div><div class="fr fc"><label>Preferred Geographies</label><input type="text" value="South India, Pan India (open to all)"></div><div class="fr"><label>Revenue Required?</label><select><option>Not required</option><option>Min ₹10L ARR</option></select></div><div class="fr"><label>DPIIT Status</label><select><option>Preferred, not mandatory</option><option>Mandatory</option></select></div><div class="fr fc"><label>Notes</label><textarea>Prefer founders with domain experience (5+ years). Regional language support is a positive signal.</textarea></div></div></div></div>`;
+
+  else if(sc==='inv-interest') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Expressed Interest</div></div>
+    <div class="content"><div class="card"><table class="tbl"><thead><tr><th>Startup</th><th>Date</th><th>Response</th><th>Action</th></tr></thead><tbody>${[['Landmarket','PropTech','May 12','Awaiting response'],['PeppyPulse','5G HW','May 10','Meeting scheduled — May 20'],['iScalePro','HR Tech','May 8','Startup declined politely']].map(([name,sec,date,response])=>`<tr><td class="tbl-name">${name}<div class="tbl-sub">${sec}</div></td><td>${date}</td><td><span class="badge ${response.includes('Meeting')?'b-green':response.includes('declined')?'b-red':'b-gold'}">${response}</span></td><td><button class="btn btn-outline btn-xs" onclick="toast('Opening conversation with ${name}...')">Message</button></td></tr>`).join('')}</tbody></table></div></div>`;
+
+  else if(sc==='inv-portfolio') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Portfolio Tracking</div></div>
+    <div class="content"><div class="callout co-gold"><span>💼</span><div><div class="fw7">Companies you've invested in appear here with milestone tracking and performance data.</div></div></div><div class="card" style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:10px">📊</div><div style="font-family:var(--serif);font-size:15px;font-weight:700;margin-bottom:5px">No portfolio companies yet</div><div class="text-muted">Once you invest in startups via FounderPort, they appear here.</div><button class="btn btn-primary mt10" onclick="showIN('inv-dealflow')">Browse Deal Flow →</button></div></div>`;
+}
+
+// ─────── INCUBATOR SCREENS ───────
+function renderIC(sc){
+  const m=document.getElementById('ic-main');
+
+  if(sc==='ic-portfolio') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Portfolio Overview — Sona Incubation</div><div class="topbar-right"><button class="btn btn-secondary btn-sm" onclick="toast('📧 Bulk invite sent to 12 startups')">+ Invite Startups</button><button class="btn btn-primary btn-sm">Cohort: Batch 7</button></div></div>
+    <div class="content">
+      <div class="sg sg-5"><div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">34</div><div class="stat-label">Startups in Cohort</div></div><div class="stat-card" style="border-top:3px solid var(--accent)"><div class="stat-val" style="color:var(--accent)">6.2</div><div class="stat-label">Avg IRR Score</div></div><div class="stat-card" style="border-top:3px solid var(--blue)"><div class="stat-val" style="color:var(--blue)">12</div><div class="stat-label">Investor-Ready</div></div><div class="stat-card" style="border-top:3px solid var(--gold)"><div class="stat-val" style="color:var(--gold)">₹3.2Cr</div><div class="stat-label">Total Ask</div></div><div class="stat-card" style="border-top:3px solid var(--purple)"><div class="stat-val" style="color:var(--purple)">2</div><div class="stat-label">Funded</div></div></div>
+      <div class="cols-2 g14">
+        <div class="card"><div class="flex fx-b mb12"><div class="sec-title">Startup Portfolio</div><input type="text" placeholder="Search..." style="width:140px"></div>${STARTUPS.map(s=>`<div class="su-card" onclick="showIC('ic-startups');toast('Opening ${s.name}...')"><div class="su-logo" style="background:${s.color}">${s.abbr}</div><div style="flex:1"><div class="su-name">${s.name}</div><div class="su-meta">${s.sector} · ${s.founder}</div><div class="su-badges">${s.irr?`<span class="badge b-orange">IRR: ${s.irr}/10</span>`:'<span class="badge b-gray">IRR Pending</span>'}${s.investors?`<span class="badge b-green">${s.investors} investors</span>`:''}</div></div><div style="text-align:right"><div style="font-family:var(--serif);font-size:19px;font-weight:700;color:${s.irrColor}">${s.irr?s.irr.toFixed(1):'—'}</div><div class="text-muted" style="font-size:10px">/10 IRR</div></div></div>`).join('')}<div style="text-align:center;font-size:11px;color:var(--ink4);margin-top:5px">+ 29 more startups in this cohort</div></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card card-sm"><div class="flex fx-b mb10"><div class="sec-title">Top Investor Matches</div><span class="ai-pill">✦ Cohort-wide</span></div>${[['#7c3aed','SI','Speciale Invest','Landmarket, PeppyPulse',88],['#1f5c35','CA','Chennai Angels','Landmarket, iScalePro',78],['#163668','IPV','IPV','PeppyPulse, Biglyp',65]].map(([bg,abbr,name,matched,prob])=>`<div class="inv-card"><div class="inv-av" style="background:${bg}">${abbr}</div><div class="inv-info"><div class="inv-name">${name}</div><div class="inv-firm">Matched: ${matched}</div></div><div class="prob-wrap"><div class="prob-track"><div class="prob-fill" style="width:${prob}%;background:var(--green2)"></div></div><span class="prob-val" style="color:var(--green2)">${prob}%</span></div></div>`).join('')}</div>
+          <div class="card card-sm" style="flex:1"><div class="flex fx-b mb10"><div class="sec-title">Portfolio News</div><span class="ai-pill">✦ Daily</span></div>${[['#2a7a48','Speciale Invest closes ₹180Cr Fund III — South India deeptech','High relevance: Landmarket, PeppyPulse'],['#1f4d96','5G SA rollout — 24 new TN cities covered by Airtel','Market opportunity: PeppyPulse'],['#c94800','SISFS cohort applications — Anna University shortlisted','Grant: Entire cohort may be eligible']].map(([color,title,tag])=>`<div class="news-item"><div class="news-dot" style="background:${color}"></div><div style="flex:1"><div class="news-title">${title}</div><div class="news-tag">${tag}</div></div><button class="btn btn-outline btn-xs" onclick="toast('📤 News shared with relevant startups')">Share</button></div>`).join('')}</div>
+        </div>
+      </div>
+    </div>`;
+
+  else if(sc==='ic-startups') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">My Startups — Detailed</div><div class="topbar-right"><button class="btn btn-secondary btn-sm" onclick="toast('⚡ Bulk IRR generation queued for 8 startups')">⚡ Bulk IRR Generate</button></div></div>
+    <div class="content"><div class="card"><table class="tbl"><thead><tr><th>Startup</th><th>Sector</th><th>Founder</th><th>Ask</th><th>IRR</th><th>Status</th><th>Investors</th><th>Action</th></tr></thead><tbody>${STARTUPS.map(s=>`<tr onclick="toast('Opening ${s.name}...')"><td><div class="flex fx-c g8"><div class="su-logo" style="background:${s.color};width:24px;height:24px;font-size:10px;border-radius:5px">${s.abbr}</div><div class="tbl-name">${s.name}</div></div></td><td><span class="badge b-orange">${s.sector}</span></td><td class="text-sm">${s.founder}</td><td style="font-family:var(--mono)">${s.ask}</td><td><span style="font-family:var(--mono);color:${s.irrColor};font-weight:700">${s.irr?s.irr:'-'}</span></td><td><span class="badge ${s.irr?'b-orange':'b-gray'}">${s.status}</span></td><td>${s.investors||'—'}</td><td>${s.irr?`<button class="btn btn-outline btn-xs" onclick="event.stopPropagation();toast('📊 IRR for ${s.name} opened')">View IRR</button>`:`<button class="btn btn-primary btn-xs" onclick="event.stopPropagation();toast('⚡ Generating IRR for ${s.name}...')">⚡ IRR</button>`}</td></tr>`).join('')}</tbody></table></div></div>`;
+
+  else if(sc==='ic-invmatch') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Investor Matches — Cohort View</div><div class="topbar-right"><span class="ai-pill">✦ Updated nightly by EOD agent</span></div></div>
+    <div class="content"><div class="card"><div class="fw7 mb10">Match Matrix — Startups × Investors</div><table class="tbl"><thead><tr><th>Startup</th><th>Speciale</th><th>Chennai Angels</th><th>100X.VC</th><th>IPV</th><th>CIBI</th><th>IAN</th></tr></thead><tbody>${STARTUPS.map(s=>`<tr><td><div class="flex fx-c g8"><div class="su-logo" style="background:${s.color};width:22px;height:22px;font-size:9px;border-radius:4px">${s.abbr}</div><span class="fw6">${s.name}</span></div></td>${[88,82,77,61,58,68].map((base,i)=>{const p=s.irr?Math.max(20,base-i*4):Math.max(10,base-30);return`<td><span style="font-family:var(--mono);font-size:11px;font-weight:700;color:${p>70?'var(--green2)':p>50?'var(--accent2)':'var(--ink4)'}">${p}%</span></td>`}).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+
+  else if(sc==='ic-news') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Portfolio News Feed</div><div class="topbar-right"><span class="ai-pill">✦ AI-curated daily for your cohort</span></div></div>
+    <div class="content"><div class="card">${[['#2a7a48','Speciale Invest closes ₹180Cr Fund III — deeptech & regional focus','Landmarket, PeppyPulse','YourStory · 3hr ago'],['#1f4d96','5G SA rollout — 24 new TN cities covered','PeppyPulse','Telecom Talk · 5hr ago'],['#c94800','TN RERA mandates digital listing verification for all brokers','Landmarket','The Hindu · 1 day ago'],['#b06c10','DST NIDHI PRAYAS new cohort — applications open June 30','All DPIIT-registered startups','DST India · 1 day ago'],['#4a1f78','HR tech adoption at SMEs surges — 3x growth TN, KA, MH','iScalePro','Economic Times · 2 days ago'],['#145858','EdFinTech lending grows 40% in FY26 — NBFC + fintech partnerships','Biglyp','Inc42 · 2 days ago']].map(([color,title,tag,meta])=>`<div class="news-item"><div class="news-dot" style="background:${color}"></div><div style="flex:1"><div class="news-title">${title}</div><div class="news-tag">Relevant: ${tag}</div><div class="news-meta">${meta}</div></div><button class="btn btn-outline btn-xs" onclick="toast('📤 News shared with ${tag}')">Share</button></div>`).join('')}</div></div>`;
+
+  else if(sc==='ic-milestones') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Milestones Tracker</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('+ New milestone added')">+ Add</button></div></div>
+    <div class="content">${STARTUPS.slice(0,3).map(s=>`<div class="card mb12"><div class="flex fx-b mb10"><div class="flex g8 fx-c"><div class="su-logo" style="background:${s.color};width:26px;height:26px;font-size:10px;border-radius:6px">${s.abbr}</div><span class="fw7">${s.name}</span></div><div style="width:180px"><div class="prog-label"><span style="font-size:10px">Milestone Progress</span><span style="font-size:10px;font-weight:700;color:var(--accent)">${s.irr?'60':'25'}%</span></div><div class="prog-track"><div class="prog-fill" style="width:${s.irr?60:25}%"></div></div></div></div>${[['File DPIIT recognition',s.irr?'Done':'In Progress'],['Complete IRR profile',s.irr?'Done':'Pending'],['Generate investor one-pager',s.irr?'In Progress':'Pending'],['Launch n8n campaign',s.irr&&s.investors?'Done':'Pending']].map(([title,status])=>`<div class="milestone"><div style="width:24px;height:24px;border-radius:6px;background:${status==='Done'?'var(--green3)':status==='In Progress'?'var(--gold3)':'var(--bg3)'};display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">${status==='Done'?'✅':status==='In Progress'?'🔄':'⬜'}</div><div style="flex:1"><div style="font-size:12px;font-weight:600">${title}</div><div class="text-muted">${status}</div></div><span class="badge ${status==='Done'?'b-green':status==='In Progress'?'b-gold':'b-gray'}">${status}</span></div>`).join('')}</div>`).join('')}</div>`;
+
+  else if(sc==='ic-grants') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Grants Pipeline</div><div class="topbar-right"><span class="text-muted text-sm">Kesavaraj (MPB) manages</span></div></div>
+    <div class="content"><div class="card"><table class="tbl"><thead><tr><th>Startup</th><th>Grant</th><th>Amount</th><th>Status</th><th>Deadline</th><th>Action</th></tr></thead><tbody>${[['Landmarket','DST NIDHI PRAYAS','₹20L','Documents Gathering','June 30'],['PeppyPulse','SISFS','₹40L','Submitted','Aug 15'],['iScalePro','TN RISE','₹10L','Draft Pending','Rolling'],['Biglyp','SISFS','₹50L','Eligible — Not Started','Aug 15'],['Heterogenix','DST NIDHI PRAYAS','₹15L','Under Review','Closed']].map(([su,grant,amount,status,deadline])=>`<tr><td class="tbl-name">${su}</td><td class="text-sm">${grant}</td><td style="font-family:var(--mono)">${amount}</td><td><span class="badge ${status.includes('Sub')?'b-green':status.includes('Review')?'b-blue':status.includes('Not')?'b-gray':'b-gold'}">${status}</span></td><td class="text-muted">${deadline}</td><td><button class="btn btn-outline btn-xs" onclick="toast('Opening ${su} grant...')">Manage</button></td></tr>`).join('')}</tbody></table></div></div>`;
+
+  else if(sc==='ic-mentors') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Mentor Network</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('+ Mentor invitation sent')">+ Invite Mentor</button></div></div>
+    <div class="content"><div class="cols-2 g14">${[['Dr. Venkatesan','Angel Investor · Ex-Nasscom','PropTech, SaaS',['Landmarket','iScalePro'],'Meetup: May 20'],['Priya Subramaniam','VC Partner · Speciale Invest','DeepTech, B2B',['PeppyPulse'],'Call: May 22'],['Ramesh Babu','Serial Founder · 3 exits','Consumer, Fintech',['Biglyp'],'Workshop: May 25'],['Dr. Anitha Kumar','Professor, IIT Madras','CleanTech, Research',['Heterogenix'],'Review: May 28']].map(([name,role,sectors,assigned,next])=>`<div class="card flex g12"><div style="width:38px;height:38px;border-radius:10px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--ink3);flex-shrink:0">${name.split(' ').map(n=>n[0]).join('')}</div><div style="flex:1"><div class="fw7">${name}</div><div class="text-sm text-muted">${role}</div><div class="text-sm mt4">Sectors: <span style="color:var(--accent)">${sectors}</span></div><div class="mt4">${assigned.map(a=>`<span class="badge b-gray" style="margin-right:3px">${a}</span>`).join('')}</div><div class="text-sm text-muted mt4">Next: ${next}</div></div><button class="btn btn-outline btn-xs" style="align-self:flex-start" onclick="toast('📅 Session booked with ${name}')">📅</button></div>`).join('')}</div></div>`;
+
+  else if(sc==='ic-dpiit') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">DPIIT Reports</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('⬇ DPIIT_SonaIncubation_Q1FY26.pdf downloading...')">⬇ Download</button></div></div>
+    <div class="content">
+      <div class="sg sg-4 mb14"><div class="stat-card"><div class="stat-val">34</div><div class="stat-label">Total Startups</div></div><div class="stat-card"><div class="stat-val">12</div><div class="stat-label">DPIIT Recognised</div></div><div class="stat-card"><div class="stat-val">₹3.2Cr</div><div class="stat-label">Total Ask</div></div><div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">2</div><div class="stat-label">Deals Closed</div></div></div>
+      <div class="card"><div class="fw7 mb10">Sector Distribution</div><div style="display:flex;gap:8px;flex-wrap:wrap">${[['PropTech','8','var(--accent)'],['HR Tech','6','var(--blue)'],['EdTech','5','var(--green)'],['WaterTech','4','var(--teal)'],['FinTech','4','var(--purple)'],['Others','7','var(--ink4)']].map(([sec,count,color])=>`<div style="padding:10px 14px;background:var(--bg2);border-radius:8px;text-align:center"><div style="font-family:var(--mono);font-size:20px;font-weight:700;color:${color}">${count}</div><div style="font-size:11px;color:var(--ink4);margin-top:2px">${sec}</div></div>`).join('')}</div></div>
+    </div>`;
+
+  else if(sc==='ic-whitelabel') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">White-Label Settings</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('✓ White-label saved — portal updated')">Save & Preview</button></div></div>
+    <div class="content">
+      <div class="callout co-green"><span>🎨</span><div><div class="fw7">Your startups see your branded portal — not FounderPort branding. Custom domain on Pro plan.</div></div></div>
+      <div class="cols-2 g14">
+        <div class="card"><div class="fw7 mb12">Brand Settings</div><div class="fr"><label>Incubator Name</label><input type="text" value="Sona Incubation Centre"></div><div class="fr"><label>Tagline</label><input type="text" value="Building Tomorrow's Ventures · Salem, TN"></div><div class="fr"><label>Primary Brand Color</label><input type="text" value="#1f5c35"></div><div class="fr"><label>Custom Domain</label><input type="text" value="startups.sonacollege.edu.in"></div><div class="fr"><label>Logo Upload</label><div style="border:1.5px dashed var(--rule2);border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:var(--bg2)" onclick="toast('📎 Upload logo (PNG/SVG · Max 2MB)')"><div style="font-size:16px;margin-bottom:3px">🖼</div><div class="text-muted">Click to upload logo</div></div></div></div>
+        <div class="card" style="background:var(--bg2)"><div class="fw7 mb10">Portal Preview</div><div style="background:var(--white);border:1px solid var(--rule);border-radius:8px;overflow:hidden"><div style="background:var(--green);padding:11px 15px"><div style="font-family:var(--serif);font-size:14px;color:#fff;font-weight:700">Sona Incubation Centre</div></div><div style="padding:12px;font-size:11px;color:var(--ink4)">Your startups see this branded interface. All FounderPort tools remain the same underneath.</div></div></div>
+      </div>
+    </div>`;
+}
+
+// ─────── REFERRAL SCREENS ───────
+function renderRP(sc){
+  const m=document.getElementById('rp-main');
+  if(sc==='rp-dashboard') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Partner Dashboard — Ravi Kumar</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('🔗 Referral link copied!')">🔗 Copy Link</button></div></div>
+    <div class="content">
+      <div class="sg sg-4"><div class="stat-card" style="border-top:3px solid var(--gold)"><div class="stat-val" style="color:var(--gold)">₹28,500</div><div class="stat-label">Total Earnings</div></div><div class="stat-card"><div class="stat-val">8</div><div class="stat-label">Startups Referred</div></div><div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">3</div><div class="stat-label">Deals Closed</div></div><div class="stat-card"><div class="stat-val">37%</div><div class="stat-label">Conversion Rate</div></div></div>
+      <div class="cols-2 g14">
+        <div class="card"><div class="sec-title mb12">My Referral Link</div><div style="background:var(--bg2);border-radius:8px;padding:11px;font-family:var(--mono);font-size:11px;margin-bottom:10px;border:1px solid var(--rule)">founderport.in/join?ref=RAVI-KUMAR-2026</div><div class="text-sm text-muted mb10">You earn commission when founders sign up and use the platform, or when a deal closes.</div><div class="flex g8"><button class="btn btn-primary btn-sm" onclick="toast('🔗 Copied!')">Copy Link</button><button class="btn btn-secondary btn-sm" onclick="toast('📱 WhatsApp message drafted')">Share on WhatsApp</button></div></div>
+        <div class="card"><div class="sec-title mb10">Earnings Breakdown</div>${[['Signup Commission','₹200 per confirmed signup','₹1,600 (8 signups)','var(--blue)'],['Platform Revenue Share','20% of first 3 months subscription','₹6,900','var(--green)'],['Deal Close Commission','2% of deal value (success fee split)','₹20,000 (1 deal closed)','var(--accent)']].map(([type,basis,earned,color])=>`<div style="padding:9px 0;border-bottom:1px solid var(--rule)"><div class="flex fx-b"><div class="fw6 text-sm">${type}</div><span style="font-family:var(--mono);font-size:12px;color:${color};font-weight:700">${earned}</span></div><div class="text-muted mt4">${basis}</div></div>`).join('')}<div class="flex fx-b mt10"><div class="fw7">Total Pending Payout</div><span style="font-family:var(--mono);font-size:14px;color:var(--gold);font-weight:700">₹28,500</span></div><button class="btn btn-gold btn-sm mt8" onclick="toast('💰 Payout request submitted — NEFT within 5 business days')">Request Payout</button></div>
+      </div>
+    </div>`;
+
+  else if(sc==='rp-pipeline') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">My Referral Pipeline</div></div>
+    <div class="content"><div class="card"><table class="tbl"><thead><tr><th>Startup</th><th>Referred</th><th>Status</th><th>Platform Activity</th><th>Commission</th></tr></thead><tbody>${STARTUPS.map((s,i)=>`<tr><td><div class="flex fx-c g8"><div class="su-logo" style="background:${s.color};width:22px;height:22px;font-size:9px;border-radius:4px">${s.abbr}</div><div class="tbl-name">${s.name}</div></div></td><td class="text-muted">May ${2+i}</td><td><span class="badge ${i===0?'b-green':i===1?'b-blue':i===2?'b-gold':'b-gray'}">${i===0?'Active — Fundraising':i===1?'Active — Profile Done':i===2?'Just Signed Up':'Link Sent'}</span></td><td class="text-sm">${i===0?'IRR, investors contacted':i===1?'One-pager, campaign live':i===2?'Profile 30% done':'No activity yet'}</td><td style="font-family:var(--mono);color:var(--gold);font-weight:700">${i===0?'₹8,500':i===1?'₹4,200':i===2?'₹200':'Pending'}</td></tr>`).join('')}</tbody></table></div></div>`;
+
+  else if(sc==='rp-earnings') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Earnings History</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('💰 Payout request submitted — ₹28,500 via NEFT')">Request Payout</button></div></div>
+    <div class="content"><div class="card"><table class="tbl"><thead><tr><th>Date</th><th>Event</th><th>Startup</th><th>Amount</th><th>Status</th></tr></thead><tbody>${[['May 16','Deal close commission','Landmarket','₹20,000','Pending Payout'],['May 14','Subscription commission','PeppyPulse','₹6,900','Pending Payout'],['May 10','Signup commission','iScalePro','₹200','Pending Payout'],['May 8','Signup commission','Biglyp','₹200','Pending Payout'],['Apr 30','Signup commission','Heterogenix','₹200','Paid (Apr 30)']].map(([date,event,su,amount,status])=>`<tr><td>${date}</td><td class="text-sm">${event}</td><td class="fw6">${su}</td><td style="font-family:var(--mono);color:var(--gold);font-weight:700">${amount}</td><td><span class="badge ${status.includes('Paid')?'b-green':'b-gold'}">${status}</span></td></tr>`).join('')}</tbody></table></div></div>`;
+
+  else if(sc==='rp-marketing') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Marketing Kit</div></div>
+    <div class="content"><div class="cols-3 g12">${[['📱','WhatsApp Message','Pre-written message for founders','Copy Message','toast("📱 WhatsApp message copied!")'],['📧','Email Template','Professional intro email','Copy Email','toast("📧 Email copied!")'],['🖼','Social Banner','LinkedIn / Twitter visual asset','Download PNG','toast("⬇ Banner downloaded")'],['📄','Partner One-Pager','PDF explaining partner program','Download PDF','toast("⬇ PartnerKit.pdf downloaded")'],['🎥','Demo Video Link','2-min platform walkthrough','Copy Link','toast("🔗 Demo link copied!")'],['💬','Pitch Script','30-second verbal pitch','View Script','toast("📝 Opening pitch script...")']].map(([icon,title,desc,action,handler])=>`<div class="card card-sm text-center" style="cursor:pointer" onclick="${handler}"><div style="font-size:26px;margin-bottom:7px">${icon}</div><div class="fw7 mb4">${title}</div><div class="text-muted mb10">${desc}</div><button class="btn btn-primary btn-sm" style="width:100%;justify-content:center">${action}</button></div>`).join('')}</div></div>`;
+}
+
+// ─────── CRM SCREENS ───────
+function renderCRM(sc){
+  const m=document.getElementById('crm-main');
+  if(sc==='crm-pipeline') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">MPB Pipeline Kanban</div><div class="topbar-right"><input type="text" placeholder="Search..." style="width:160px"><select style="width:120px"><option>All Sectors</option></select><button class="btn btn-primary btn-sm" onclick="toast('+ New prospect added')">+ Add Prospect</button></div></div>
+    <div class="content" style="overflow:hidden;padding-bottom:0">
+      <div class="sg sg-5 mb12"><div class="stat-card" style="border-top:3px solid var(--accent)"><div class="stat-val" style="color:var(--accent)">₹1.3L</div><div class="stat-label">MRR This Month</div></div><div class="stat-card"><div class="stat-val">12</div><div class="stat-label">Active Startups</div></div><div class="stat-card"><div class="stat-val">3</div><div class="stat-label">Incubators Signed</div></div><div class="stat-card"><div class="stat-val">340+</div><div class="stat-label">Investor Mandates</div></div><div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">2</div><div class="stat-label">In Term Sheet</div></div></div>
+      <div class="kanban" style="height:calc(100vh - 260px)">
+        <div class="k-col"><div class="k-head" style="background:rgba(154,153,144,.1);color:var(--ink4)"><span>Link Sent</span><span class="badge b-gray">4</span></div><div class="k-body">${[['Ruva Capital','NBFC · ₹50Cr'],['MetaPath AI','HR Tech · ₹1Cr'],['Cinematica','Media · ₹20L'],['BCBUZZ','Cybersec · ₹15L']].map(([name,meta])=>`<div class="k-card"><div class="k-card-name">${name}</div><div class="k-card-meta">${meta}</div></div>`).join('')}</div></div>
+        <div class="k-col"><div class="k-head" style="background:rgba(74,31,120,.1);color:var(--purple)"><span>Data Received</span><span class="badge b-purple">3</span></div><div class="k-body">${STARTUPS.filter(s=>!s.irr).map(s=>`<div class="k-card" style="border-color:rgba(74,31,120,.3)"><div class="k-card-name">${s.name}</div><div class="k-card-meta">${s.sector} · ${s.ask}</div><button class="btn btn-primary btn-xs mt4" onclick="toast('⚡ IRR generating for ${s.name}...')">⚡ Generate IRR</button></div>`).join('')}<div class="k-card" style="border-color:rgba(74,31,120,.3)"><div class="k-card-name">BAEONN</div><div class="k-card-meta">AdTech · ₹35L</div><button class="btn btn-primary btn-xs mt4" onclick="toast('⚡ Generating...')">⚡ Generate IRR</button></div></div></div>
+        <div class="k-col"><div class="k-head" style="background:rgba(201,72,0,.1);color:var(--accent)"><span>IRR Done</span><span class="badge b-orange">2</span></div><div class="k-body">${STARTUPS.filter(s=>s.irr&&s.investors===0).map(s=>`<div class="k-card" style="border-color:rgba(201,72,0,.3)"><div class="k-card-name">${s.name}</div><div class="k-card-meta">IRR: ${s.irr}</div><button class="btn btn-gold btn-xs mt4" onclick="toast('📄 Generating one-pager...')">📄 One-Pager</button></div>`).join('')}</div></div>
+        <div class="k-col"><div class="k-head" style="background:rgba(138,82,8,.1);color:var(--gold)"><span>One-Pager Done</span><span class="badge b-gold">2</span></div><div class="k-body"><div class="k-card" style="border-color:rgba(138,82,8,.3)"><div class="k-card-name">Landmarket</div><div class="k-card-meta">PropTech · ₹1Cr · IRR: 4.0</div><button class="btn btn-green btn-xs mt4" onclick="toast('🔍 Investor search running...')">🔍 Find Investors</button></div><div class="k-card" style="border-color:rgba(138,82,8,.3)"><div class="k-card-name">Mithra Home</div><div class="k-card-meta">Consumer · ₹5Cr · IRR: 3.5</div><button class="btn btn-green btn-xs mt4" onclick="toast('🔍 Running...')">🔍 Find Investors</button></div></div></div>
+        <div class="k-col"><div class="k-head" style="background:rgba(20,88,88,.1);color:var(--teal)"><span>Investor Search</span><span class="badge b-teal">1</span></div><div class="k-body"><div class="k-card" style="border-color:rgba(20,88,88,.3)"><div class="k-card-name">Heterogenix ✓</div><div class="k-card-meta">12 investors · Campaign: Active<br>Opens: 8 · Replies: 2 · Mtgs: 1</div><span class="badge b-green mt4">On Track</span></div></div></div>
+        <div class="k-col"><div class="k-head" style="background:rgba(31,92,53,.1);color:var(--green)"><span>In Discussion</span><span class="badge b-green">2</span></div><div class="k-body"><div class="k-card" style="border-color:rgba(31,92,53,.3)"><div class="k-card-name">PeppyPulse</div><div class="k-card-meta">Speciale Invest<br>Meeting: May 20</div><span class="badge b-green mt4">DD Started</span></div><div class="k-card" style="border-color:rgba(31,92,53,.3)"><div class="k-card-name">Heterogenix</div><div class="k-card-meta">Chennai Angels<br>Term sheet expected</div><span class="badge b-gold mt4">TS Soon</span></div></div></div>
+        <div class="k-col"><div class="k-head" style="background:rgba(22,54,104,.1);color:var(--blue)"><span>Term Sheet</span><span class="badge b-blue">1</span></div><div class="k-body"><div class="k-card" style="border-color:rgba(22,54,104,.3)"><div class="k-card-name">iScalePro 🎉</div><div class="k-card-meta">IPV · ₹2Cr SAFE</div><span class="badge b-blue mt4">Term Sheet Out</span><button class="btn btn-outline btn-xs mt4" onclick="toast('💰 Success fee: ₹4L + 0.5% equity')">💰 Calc Fees</button></div></div></div>
+        <div class="k-col"><div class="k-head" style="background:rgba(31,92,53,.14);color:var(--green)"><span>✅ Closed</span><span class="badge b-green">2</span></div><div class="k-body"><div class="k-card" style="border:1px solid var(--green3)"><div class="k-card-name">Biglyp 🎊</div><div class="k-card-meta">₹50L · CIBI Angels</div><span class="badge b-green mt4">Closed ✓</span></div><div class="k-card" style="border:1px solid var(--green3)"><div class="k-card-name">Ruva (prev)</div><div class="k-card-meta">₹22L · IAN</div><span class="badge b-green mt4">Closed ✓</span></div></div></div>
+      </div>
+    </div>`;
+
+  else if(sc==='crm-mandates') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Investor Mandates Database</div><div class="topbar-right"><span class="text-muted text-sm">340+ · Updated nightly</span><button class="btn btn-secondary btn-sm" onclick="toast('⬇ InvestorMandates.xlsx downloading...')">⬇ Export</button><button class="btn btn-primary btn-sm" onclick="toast('+ Added')">+ Add</button></div></div>
+    <div class="content">
+      <div class="sg sg-4 mb14"><div class="stat-card"><div class="stat-val">340+</div><div class="stat-label">Total Mandates</div></div><div class="stat-card"><div class="stat-val">54</div><div class="stat-label">Active Equity</div></div><div class="stat-card"><div class="stat-val">28</div><div class="stat-label">Angel Networks</div></div><div class="stat-card"><div class="stat-val">12</div><div class="stat-label">VC Funds</div></div></div>
+      <div class="card"><table class="tbl"><thead><tr><th>Investor</th><th>Type</th><th>Sectors</th><th>Stage</th><th>Ticket</th><th>Active?</th><th>Updated</th><th>Action</th></tr></thead><tbody>${[['Speciale Invest','VC Fund','DeepTech, B2B SaaS','Pre-Seed, Seed','₹50L–₹3Cr',true,'May 15'],['Chennai Angels','Network','All South India','Angel, Pre-Seed','₹10L–₹75L',true,'May 14'],['100X.VC','Syndicate','All Indian sectors','Pre-Seed','₹25L–₹1Cr',true,'May 13'],['CIBI Angels','Network','Tamil Nadu focus','Angel','₹5L–₹50L',true,'May 12'],['IPV','Fund','Consumer, RE, SaaS','Seed, Series A','₹1Cr–₹5Cr',true,'May 10'],['IAN','Network','General India','Angel, Pre-Seed','₹25L–₹2Cr',false,'Apr 28']].map(([name,type,sectors,stage,ticket,active,updated])=>`<tr><td class="tbl-name">${name}</td><td><span class="badge b-blue">${type}</span></td><td style="font-size:11px;max-width:140px">${sectors}</td><td class="text-sm">${stage}</td><td style="font-family:var(--mono);font-size:11px">${ticket}</td><td><span class="badge ${active?'b-green':'b-gray'}">${active?'Active':'Paused'}</span></td><td class="text-muted">${updated}</td><td><button class="btn btn-outline btn-xs" onclick="toast('Opening ${name}...')">Edit</button></td></tr>`).join('')}</tbody></table></div>
+    </div>`;
+
+  else if(sc==='crm-incubators') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Incubators CRM</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('+ New incubator added')">+ Add</button></div></div>
+    <div class="content"><div class="card"><table class="tbl"><thead><tr><th>Incubator</th><th>City</th><th>Startups</th><th>Plan</th><th>MRR</th><th>Status</th><th>Owner</th><th>Action</th></tr></thead><tbody>${[['Sona Incubation','Salem','34','Pro ₹35K/mo','₹35,000','Active','Shivanandhini'],['BITS Pilani Hyd.','Hyderabad','18','Basic ₹15K/mo','₹15,000','Demo Done','Amrish'],['StartupTN Cohort','Chennai','22','Basic ₹15K/mo','₹15,000','Signed','Shivanandhini'],['Anna University TBI','Chennai','12','Free Pilot','—','Pilot','Amrish'],['IIT Madras IITM-IC','Chennai','40','Pro ₹35K/mo','—','In Discussion','Shivanandhini']].map(([name,city,count,plan,mrr,status,owner])=>`<tr><td class="tbl-name">${name}</td><td>${city}</td><td>${count}</td><td class="text-sm">${plan}</td><td style="font-family:var(--mono);color:${mrr!=='—'?'var(--green)':'var(--ink4)'};font-weight:700">${mrr}</td><td><span class="badge ${status==='Active'?'b-green':status==='Signed'?'b-blue':status.includes('Discussion')?'b-gold':'b-gray'}">${status}</span></td><td class="text-sm">${owner}</td><td><button class="btn btn-outline btn-xs" onclick="toast('Opening ${name} CRM...')">View</button></td></tr>`).join('')}</tbody></table></div></div>`;
+
+  else if(sc==='crm-partners') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Referral Partner Management</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('+ Partner invited')">+ Invite Partner</button></div></div>
+    <div class="content"><div class="card"><table class="tbl"><thead><tr><th>Partner</th><th>Referred</th><th>Conversions</th><th>Earnings</th><th>Last Active</th><th>Payout Due</th><th>Action</th></tr></thead><tbody>${[['Ravi Kumar','8','3','₹28,500','May 16','₹28,500'],['Meena S','5','2','₹16,200','May 14','₹16,200'],['Sanjay G','3','1','₹8,900','May 12','₹8,900'],['Priya R','12','5','₹42,000','May 16','Paid'],['Arjun T','2','0','₹400','May 10','₹400']].map(([name,ref,conv,earned,active,payout])=>`<tr><td class="tbl-name">${name}</td><td>${ref}</td><td>${conv}</td><td style="font-family:var(--mono);color:var(--gold);font-weight:700">${earned}</td><td class="text-muted">${active}</td><td style="font-family:var(--mono);color:${payout==='Paid'?'var(--green)':'var(--accent)'};font-weight:700">${payout}</td><td><button class="btn btn-outline btn-xs" onclick="toast('Processing payout for ${name}...')">Payout</button></td></tr>`).join('')}</tbody></table></div></div>`;
+
+  else if(sc==='crm-grants-queue') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Grants Queue</div><div class="topbar-right"><span class="text-muted text-sm">Kesavaraj manages</span></div></div>
+    <div class="content">
+      <div class="callout co-gold"><span>🏛</span><div><div class="fw7">4 grant applications in progress. 2 deadlines within 30 days.</div></div></div>
+      <div class="card"><table class="tbl"><thead><tr><th>Startup</th><th>Grant</th><th>Amount</th><th>Deadline</th><th>Status</th><th>Assigned</th><th>Fee</th></tr></thead><tbody>${[['Landmarket','DST NIDHI PRAYAS','₹20L','June 30','Documents Pending','Kesavaraj','₹5,000'],['PeppyPulse','SISFS','₹40L','Aug 15','Submitted','Kesavaraj','₹5,000'],['Biglyp','SISFS','₹50L','Aug 15','Not Started','Unassigned','₹5,000'],['Heterogenix','TN RISE','₹10L','Rolling','Under Review','Kesavaraj','₹3,000']].map(([su,grant,amount,deadline,status,assigned,fee])=>`<tr><td class="tbl-name">${su}</td><td class="text-sm">${grant}</td><td style="font-family:var(--mono)">${amount}</td><td class="text-muted">${deadline}</td><td><span class="badge ${status.includes('Sub')?'b-green':status.includes('Review')?'b-blue':status.includes('Not')?'b-gray':'b-gold'}">${status}</span></td><td class="text-sm">${assigned}</td><td style="font-family:var(--mono);color:var(--green)">${fee}</td></tr>`).join('')}</tbody></table></div>
+    </div>`;
+
+  else if(sc==='crm-n8n') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">n8n Campaign Metrics</div><div class="topbar-right"><button class="btn btn-secondary btn-sm" onclick="toast('⬆ n8n report uploaded')">⬆ Upload Report</button><button class="btn btn-primary btn-sm" onclick="toast('+ Campaign created')">+ New Campaign</button></div></div>
+    <div class="content">
+      <div class="sg sg-4 mb14"><div class="stat-card"><div class="stat-val">148</div><div class="stat-label">Total Emails Sent</div></div><div class="stat-card" style="border-top:3px solid var(--blue)"><div class="stat-val" style="color:var(--blue)">31</div><div class="stat-label">Responses</div></div><div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">12</div><div class="stat-label">Meetings Booked</div></div><div class="stat-card" style="border-top:3px solid var(--gold)"><div class="stat-val" style="color:var(--gold)">21%</div><div class="stat-label">Response Rate</div></div></div>
+      <div class="card"><div class="fw7 mb10">Campaign Breakdown by Startup</div><table class="tbl"><thead><tr><th>Startup</th><th>Campaign Date</th><th>Sent</th><th>Opened</th><th>Replied</th><th>Meetings</th><th>Rate</th><th>Status</th></tr></thead><tbody>${STARTUPS.map((s,i)=>`<tr><td class="tbl-name">${s.name}</td><td class="text-muted">May ${8+i*2}</td><td>${[12,18,8,6,14][i]}</td><td>${[9,14,4,3,11][i]}</td><td>${[3,6,1,1,4][i]}</td><td>${[2,3,0,0,2][i]}</td><td style="color:var(--green2);font-weight:700">${[25,33,12,16,28][i]}%</td><td><span class="badge ${i<2?'b-green':'b-gray'}">${i<2?'Active':'Paused'}</span></td></tr>`).join('')}</tbody></table></div>
+    </div>`;
+
+  else if(sc==='crm-dbhealth') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Database Health Monitor</div><div class="topbar-right"><span class="ai-pill">✦ EOD agent: nightly 11PM IST</span><button class="btn btn-secondary btn-sm" onclick="toast('🔄 Manual scrape triggered — results in 2hr')">🔄 Run Now</button></div></div>
+    <div class="content">
+      <div class="sg sg-4 mb14"><div class="stat-card" style="border-top:3px solid var(--blue)"><div class="stat-val" style="color:var(--blue)">10,284</div><div class="stat-label">Total Investors</div><div class="stat-delta du">↑ 48 added yesterday</div></div><div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">28,640</div><div class="stat-label">Startups in DB</div><div class="stat-delta du">↑ 312 this week</div></div><div class="stat-card"><div class="stat-val">5,120</div><div class="stat-label">Incubators</div></div><div class="stat-card"><div class="stat-val">512</div><div class="stat-label">Grant Schemes</div></div></div>
+      <div class="cols-2 g14">
+        <div class="card"><div class="fw7 mb10">Investor DB Sources</div>${[['IAN / Chennai Angels / CIBI','Manual','1,240','Verified'],['AngelList India','API Scrape','2,800','Auto-updated'],['Tracxn API','Paid API','3,400','Premium tier'],['LinkedIn (Apify)','Scrape','1,800','Consent flagged'],['Inc42 / VCCircle','Scrape','820','Manual review'],['Direct outreach / forms','Manual','224','Highest quality']].map(([source,method,count,status])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--rule);font-size:12px"><div><div class="fw6">${source}</div><div class="text-muted">${method}</div></div><div style="text-align:right"><div style="font-family:var(--mono)">${count}</div><span class="badge ${status==='Verified'?'b-green':status==='Premium tier'?'b-blue':status==='Highest quality'?'b-purple':'b-gray'}" style="font-size:9px">${status}</span></div></div>`).join('')}</div>
+        <div class="card"><div class="fw7 mb10">DPDP Consent Status</div><div class="mb12"><div class="prog-label"><span>Investors with digital consent</span><span style="font-weight:700;color:var(--green)">31%</span></div><div class="prog-track"><div class="prog-fill" style="width:31%;background:var(--green)"></div></div></div><div class="callout co-gold" style="margin-bottom:12px"><span>⚠️</span><div><div class="fw7">Target: 80% consent by July 2026</div><div class="text-sm text-muted mt4">Consent campaign running via n8n. 3,180 emails sent.</div></div></div>${[['Explicit digital consent + timestamp','3,188'],['Email opt-in (implicit)','2,100'],['No consent (scraped only)','4,996']].map(([label,count])=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid var(--rule)"><span>${label}</span><span style="font-family:var(--mono);font-weight:700">${count}</span></div>`).join('')}</div>
+      </div>
+    </div>`;
+
+  else if(sc==='crm-agent') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">AI Agent Log — EOD Agent</div><div class="topbar-right"><span class="ai-pill">✦ Nightly 11PM IST · Claude + Gemini</span></div></div>
+    <div class="content"><div class="card"><div class="fw7 mb10">Last Run: May 15, 2026 · 11:02 PM IST</div>
+      <div style="font-family:var(--mono);font-size:11px;background:var(--ink);color:#aaa;border-radius:8px;padding:16px;line-height:2">
+        <div style="color:#333">// EOD Agent Run — May 15, 2026 23:02 IST</div>
+        <div><span style="color:var(--accent3)">[23:02]</span> Startup news scrape started — 12 sources</div>
+        <div><span style="color:var(--accent3)">[23:04]</span> 48 relevant articles → curated to 18 (Gemini 2.0 Flash)</div>
+        <div><span style="color:var(--accent3)">[23:05]</span> News pushed to 12 startup dashboards</div>
+        <div><span style="color:var(--accent3)">[23:06]</span> Investor DB scrape — AngelList India, Tracxn</div>
+        <div><span style="color:var(--accent3)">[23:09]</span> 48 new investors added (total: 10,284)</div>
+        <div><span style="color:var(--accent3)">[23:09]</span> 3 investors matched mandate profiles — notified Speciale, CIBI, IAN</div>
+        <div><span style="color:var(--accent3)">[23:10]</span> Investor match engine re-run — 5 startups re-scored</div>
+        <div><span style="color:var(--accent3)">[23:11]</span> NativeLead Angels matched Landmarket (88%) — added to match list</div>
+        <div><span style="color:var(--accent3)">[23:12]</span> Grant deadline alerts sent — 2 startups · NIDHI PRAYAS June 30</div>
+        <div><span style="color:var(--accent3)">[23:13]</span> n8n Day-5 follow-ups triggered for 3 campaigns</div>
+        <div><span style="color:var(--accent3)">[23:15]</span> <span style="color:var(--green3)">✓ EOD run complete. Next: May 16, 11PM IST</span></div>
+      </div>
+    </div></div>`;
+
+  else if(sc==='crm-revenue') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Revenue Dashboard</div><div class="topbar-right"><button class="btn btn-secondary btn-sm" onclick="toast('⬇ Revenue_May2026.xlsx downloading...')">⬇ Export</button></div></div>
+    <div class="content">
+      <div class="sg sg-4 mb14"><div class="stat-card" style="border-top:3px solid var(--accent)"><div class="stat-val" style="color:var(--accent)">₹1.3L</div><div class="stat-label">MRR (May 2026)</div><div class="stat-delta du">↑ 44% vs Apr</div></div><div class="stat-card" style="border-top:3px solid var(--green)"><div class="stat-val" style="color:var(--green)">₹5.8L</div><div class="stat-label">ARR Run Rate</div></div><div class="stat-card"><div class="stat-val">₹28L</div><div class="stat-label">Success Fees FY26</div></div><div class="stat-card"><div class="stat-val">₹3.4L</div><div class="stat-label">Grant Assist Fees</div></div></div>
+      <div class="cols-2 g14 mb14">
+        <div class="card"><div class="fw7 mb10">Revenue by Stream</div>${[['Startup SaaS (credits)','₹42,000','32%','var(--accent)'],['Incubator SaaS','₹65,000','50%','var(--green)'],['Success Fees (this month)','₹20,000','15%','var(--blue)'],['Grant Assistance','₹3,000','3%','var(--gold)']].map(([stream,amount,pct,color])=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--rule)"><div style="flex:1"><div class="fw6 text-sm">${stream}</div><div class="prog-track mt4"><div class="prog-fill" style="width:${pct};background:${color}"></div></div></div><div style="text-align:right"><div style="font-family:var(--mono);font-weight:700;color:${color}">${amount}</div><div class="text-muted">${pct}</div></div></div>`).join('')}</div>
+        <div class="card"><div class="fw7 mb10">12-Month MRR Projection</div><div class="rev-bar-wrap" id="rev-crm"></div><div style="display:flex;margin-top:3px" id="rev-crm-lbl"></div><div style="margin-top:10px;font-size:11px;color:var(--ink4)">Target: ₹35L MRR by Dec 2026. On track at current growth rate.</div></div>
+      </div>
+      <div class="card"><div class="fw7 mb10">Path to ₹1Cr ARR</div><div class="cols-4">${[['May 2026','₹1.3L MRR','3 incubators · 12 startups','On Track'],['Jun 2026','₹3.5L MRR','100 startups · 5 incubators','Target'],['Sep 2026','₹15L MRR','500 startups · 20 incubators','Target'],['Dec 2026','₹35L MRR','2,000 startups · 50 incubators','Target']].map(([month,mrr,desc,status])=>`<div style="padding:10px;background:${status==='On Track'?'rgba(31,92,53,.06)':'var(--bg2)'};border-radius:8px;border:1px solid ${status==='On Track'?'rgba(31,92,53,.2)':'var(--rule)'}"><div style="font-size:10px;color:${status==='On Track'?'var(--green)':'var(--ink4)'};font-weight:700;margin-bottom:3px">${month}</div><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent)">${mrr}</div><div style="font-size:10.5px;color:var(--ink4);margin-top:4px">${desc}</div></div>`).join('')}</div></div>
+    </div>`;
+
+  else if(sc==='crm-team') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Team Tasks</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('+ Task added')">+ Add Task</button></div></div>
+    <div class="content"><div class="cols-2 g14">${[['Amrish','Mission Director','#4a1f78',['Demo to BITS Pilani — May 16 · 2PM','Review Landmarket term sheet','Sign Sona Pro MOU','Record investor pitch video']],['Shivanandhini','Partnerships & Investor BD','#1f5c35',['Follow up with IAN (3 mandates pending)','Onboard 2 new incubators by May 31','Schedule CIBI intro for Heterogenix','Update investor DB — angel network contacts']],['Kesavaraj','Grants Back Office','#8a5208',['Submit Landmarket NIDHI PRAYAS docs','Follow up SISFS PeppyPulse application','Identify 3 new TN state grants for Biglyp','Prepare Q1 grant impact report']],['Kshitij + Nilesh','Tech Team','#163668',['Sprint 2 — Profile wizard + AI pre-fill','IRR API integration — Claude API','n8n campaign trigger integration','Razorpay payment flow — credits purchase']]].map(([name,role,color,tasks])=>`<div class="card"><div class="flex g8 fx-c mb12"><div style="width:30px;height:30px;border-radius:7px;background:${color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:11px;flex-shrink:0">${name[0]}</div><div><div class="fw7">${name}</div><div class="text-muted">${role}</div></div></div>${tasks.map((task,i)=>`<div style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--rule)"><div style="width:15px;height:15px;border-radius:4px;border:1.5px solid ${i===0?color:'var(--rule2)'};background:${i===0?color:'transparent'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;flex-shrink:0;margin-top:2px;cursor:pointer" onclick="this.style.background=this.style.background==='transparent'||!this.style.background?'${color}':'transparent'">${i===0?'✓':''}</div><div style="font-size:12px;color:${i===0?'var(--ink4)':'var(--ink2)'};text-decoration:${i===0?'line-through':'none'}">${task}</div></div>`).join('')}</div>`).join('')}</div></div>`;
+
+  else if(sc==='crm-platform') m.innerHTML=`
+    <div class="topbar"><div class="topbar-title">Platform Settings</div><div class="topbar-right"><button class="btn btn-primary btn-sm" onclick="toast('✓ Platform settings saved')">Save All</button></div></div>
+    <div class="content"><div class="cols-2 g14">
+      <div class="card"><div class="fw7 mb12">Credit Pricing</div>${[['IRR Report','5'],['One-Pager','3'],['Pitch Deck','10'],['Investor Search','2'],['Grant Search','1'],['n8n Campaign','5'],['GTM Strategy','5'],['Financial Model','8']].map(([item,val])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule)"><span style="font-size:12px">${item}</span><input type="number" value="${val}" style="width:56px;text-align:center"></div>`).join('')}</div>
+      <div class="card"><div class="fw7 mb12">AI Model Config</div><div class="fr"><label>IRR Report</label><select><option>claude-sonnet-4-20250514</option></select></div><div class="fr"><label>One-Pager / Deck</label><select><option>claude-sonnet-4-20250514</option></select></div><div class="fr"><label>Scraping / Extraction</label><select><option>gemini-2.0-flash</option></select></div><div class="fr"><label>News Curation</label><select><option>gemini-2.0-flash</option></select></div><div class="fr"><label>EOD Agent Schedule</label><input type="text" value="23:00 IST daily (cron)"></div><div class="fr"><label>Matching Engine</label><select><option>pgvector (semantic similarity)</option></select></div></div>
+      <div class="card"><div class="fw7 mb12">Integrations</div>${[['Razorpay','Payment gateway','Connected ✓'],['SendGrid','Transactional email','Connected ✓'],['n8n (self-hosted)','Outreach automation','Connected ✓'],['AWS S3','Document storage','Connected ✓'],['Tracxn API','Investor data','Connected ✓'],['Apify (LinkedIn)','Web scraping','Active']].map(([name,desc,status])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--rule)"><div><div class="fw6 text-sm">${name}</div><div class="text-muted">${desc}</div></div><span class="badge ${status.includes('✓')?'b-green':'b-blue'}">${status}</span></div>`).join('')}</div>
+      <div class="card"><div class="fw7 mb12">Feature Flags</div>${[['EOD AI Agent','On'],['Semantic Matching (pgvector)','On'],['n8n Campaign Launcher','On'],['Referral Partner Module','On'],['Service Marketplace','Off (Sprint 8)'],['Investor Portal','On (Beta)'],['White-Label Multi-tenant','Off (Sprint 10)'],['Co-Founder Agreement','On (Sprint 8)']].map(([feature,status])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--rule)"><span style="font-size:12px">${feature}</span><div style="display:flex;align-items:center;gap:6px"><span class="badge ${status==='On'||status.includes('Beta')?'b-green':'b-gray'}">${status}</span><div class="toggle" style="background:${status==='On'||status.includes('Beta')?'var(--green)':'var(--rule2)'}" onclick="this.style.background=this.style.background.includes('122')?'var(--rule2)':'var(--green)';toast('Feature toggle saved')"><div class="toggle-knob" style="${status==='On'||status.includes('Beta')?'right:2px':'left:2px'}"></div></div></div></div>`).join('')}</div>
+    </div></div>`;
+
+  // Rev chart for CRM
+  if(sc==='crm-revenue'){
+    setTimeout(()=>{
+      const vals=[0.8,1.3,2.1,3.5,5.2,7.8,10.5,14,18,23,29,35];
+      const el=document.getElementById('rev-crm');const ll=document.getElementById('rev-crm-lbl');
+      if(!el)return;const mx=Math.max(...vals);
+      el.innerHTML=vals.map((v,i)=>`<div class="rev-bar" style="height:${v/mx*100}%;background:${i<5?'var(--accent)':'rgba(201,72,0,.3)'}"></div>`).join('');
+      ll.innerHTML=vals.map((_,i)=>`<div class="rev-bar-lbl" style="flex:1">${'MJJASONDJ FA'[i]}</div>`).join('');
+    },100);
+  }
+}
+
+// ─────── INIT ───────
+renderSU('dashboard');
+renderIN('inv-dashboard');
+renderIC('ic-portfolio');
+renderRP('rp-dashboard');
+renderCRM('crm-pipeline');
+</script>
+</body>
+</html>
